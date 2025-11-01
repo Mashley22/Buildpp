@@ -277,7 +277,7 @@ class Library:
 
         return dupes
 
-    def allInternalChecks(self) -> List[str]:
+    def allChecks(self) -> List[str]:
 
         retval = {
             "src_dupes" : self.checkSourcesDups(),
@@ -291,3 +291,9 @@ class Library:
 
         return retval
 
+    def header_only(self) -> bool:  # perhaps no_link in future?
+
+        if len(self._sources) == 0:
+            return True
+        else:
+            return False

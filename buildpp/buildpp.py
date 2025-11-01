@@ -3,8 +3,6 @@ from pathlib import Path
 import inspect
 import importlib
 
-__libraries = dict()
-
 
 class DuplicateLibraryErr:
     libName : str
@@ -16,25 +14,15 @@ class DuplicateLibraryErr:
         print(f"Error: Duplicate library added {name}")
 
 
-def check_invalid_dependencies(lib : Library):
-
-    return [ele for ele in lib.dependencies.all() if ele not in __libraries.keys()]
-
-
 def add_library(name : str,
                 libType : LibType = LibType.STATIC) -> Library:
 
     if not isinstance(name, str):
         raise TypeError
 
-    if name in __libraries:
-        raise DuplicateLibraryErr(name)
-
-    __libraries[name] = Library(name,
-                                Path(inspect.stack()[1].filename).resolve().parent,
-                                libType)
-
-    return __libraries[name]
+    return Library(name,
+                   Path(inspect.stack()[1].filename).resolve().parent,
+                   libType)
 
 
 def import_buildList(relative_path: str):
