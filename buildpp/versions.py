@@ -18,7 +18,7 @@ class Version:
     def _set(self,
              version_list : List[int]) -> None:
 
-        for i in len(self._version):
+        for i in range(len(self._version)):
             self._version[i] = version_list[i]
 
     def _construct(self,
@@ -50,3 +50,71 @@ class Version:
             self._construct(num_list)
         else:
             self._set(num_list)
+
+    def _compareCheck(self,
+                      other : 'Version') -> None:
+        if len(self._version) == 0 or len(self._version) != len(other._version):
+            raise TypeError
+
+    def __gt__(self,
+               other : 'Version') -> bool:
+
+        self._compareCheck(other)
+
+        for i in range(self._version):
+            if self._version[i] > other._version[i]:
+                return True
+            if self._version[i] < other._version[i]:
+                return False
+
+        return self._version[-1] > other._version[-1]
+
+    def __lt__(self,
+               other : 'Version') -> bool:
+
+        self._compareCheck(other)
+
+        for i in range(self._version):
+            if self._version[i] < other._version[i]:
+                return True
+            if self._version[i] > other._version[i]:
+                return False
+
+        return self._version[-1] < other._version[-1]
+
+    def __ge__(self,
+               other : 'Version') -> bool:
+
+        self._compareCheck(other)
+
+        for i in range(self._version):
+            if self._version[i] > other._version[i]:
+                return True
+            if self._version[i] < other._version[i]:
+                return False
+
+        return self._version[-1] >= other._version[-1]
+
+    def __le__(self,
+               other : 'Version') -> bool:
+
+        self._compareCheck(other)
+
+        for i in range(self._version):
+            if self._version[i] < other._version[i]:
+                return True
+            if self._version[i] > other._version[i]:
+                return False
+
+        return self._version[-1] <= other._version[-1]
+
+    def __eq__(self,
+               other : 'Version') -> bool:
+
+        self._compareCheck(other)
+
+        for i in range(self._version):
+            if self._version[i] != other._version[i]:
+                return False
+
+        return True
