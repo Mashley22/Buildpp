@@ -1,0 +1,2 @@
+--Handle non trivial compiler options differently??
+i.e. static stuff/locations etc.
