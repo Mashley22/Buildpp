@@ -47,22 +47,19 @@ class LibInterfacingForm:
 
 
 class DependenciesList:
-    _names : List[str]
+    _libs : List['Library']
 
     def __init__(self,
-                 dependencies : List[Union[str, 'Library']] = []):
+                 dependencies : List['Library'] = []):
 
-        if len(dependencies) == 0:
-            self._names = []
-        else:
-            self.add(dependencies)
+        self.add(dependencies)
 
     @property
-    def names(self) -> List[str]:
-        return self._names
+    def libs(self) -> List[str]:
+        return self._libs
 
     def add(self,
-            newDependencies : Union[List[Union[str, 'Library']], str, 'Library']) -> None:
+            newDependencies : Union[List['Library'], 'Library']) -> None:
 
         if isinstance(newDependencies, list):
             for ele in newDependencies:
@@ -71,16 +68,12 @@ class DependenciesList:
             self._addOne(newDependencies)
 
     def _addOne(self,
-                newDependecy : Union[str, 'Library']) -> None:
+                newDependecy : 'Library') -> None:
 
         if isinstance(newDependecy, Library):
-            name = newDependecy.name
-        elif isinstance(newDependecy, str):
-            name = newDependecy
+            self._libs.append(newDependecy)
         else:
             raise TypeError
-
-        self._names.append(name)
 
 
 class Dependencies(LibInterfacingForm):
