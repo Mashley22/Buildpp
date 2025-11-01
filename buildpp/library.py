@@ -1,6 +1,8 @@
-import os
 from typing import List, Union, Type, TypeVar
 from enum import Enum
+from pathlib import Path
+
+from .utils import findDuplicates, findNonExistFiles, ValidCompileFlags
 
 
 '''
@@ -12,28 +14,6 @@ its dependencies or the dependencies inherited from the dependencies
 class LibType(Enum):
     STATIC = 0
     SHARED = 0
-
-
-'''!
-@note the errors are raised only at the end
-'''
-
-
-class DuplicateDependency_err:
-    duplicateDep : str
-
-    def __init__(self,
-                 duplicate : str):
-
-        self.duplicateDep = duplicate
-
-
-class DuplicateIncludeDir_err:
-    _duplicateDir : str
-
-    def __init__(self,
-                 DuplicateDir : str):
-        self.duplicateDir = DuplicateDir
 
 
 class LibInterfacingForm:
@@ -58,6 +38,12 @@ class LibInterfacingForm:
     @property
     def interface(self) -> T:
         return self._interface
+
+    def all(self):
+        retval = []
+        retval.extend(self._public)
+        retval.extend(self._private)
+        retval.extend(self._interface)
 
 
 class DependenciesList:
@@ -107,7 +93,7 @@ class GenericStringList:
 
     def __init__(self,
                  eles : Union[List[str], str] = []):
-
+        self._list = []
         self.add(eles)
 
     def _addOne(self,
@@ -164,7 +150,7 @@ class CompilerFlags(LibInterfacingForm):
 
 class CompileDefinitionsList(GenericStringList):
     def __init__(self,
-                 defs : List[str]):
+                 defs : List[str] = []):
         super().__init__(defs)
 
     @property
@@ -190,20 +176,24 @@ class Library:
     _compilerFlags : CompilerFlags
     _compileDefinitions : CompileDefinitions
     _libType : LibType
-    _root : os.PathLike
+    _root : Path
+    _name : str
 
     def __init__(self,
+                 name : str,
+                 buildListDir : Path,
                  libType : LibType = LibType.STATIC):
 
         assert isinstance(libType, LibType)
 
-        self._root = os.path.dirname(__file__)
+        self._root = buildListDir
         self._sources = GenericStringList()
         self._dependencies = Dependencies()
         self._includeDirs = IncludeDirs()
         self._compilerFlags = CompilerFlags()
         self._compileDefinitions = CompileDefinitions()
         self._libType = libType
+        self._name = name
 
     '''!
     @brief RELATIVE
@@ -231,3 +221,80 @@ class Library:
     @property
     def libType(self) -> LibType:
         return self._libType
+
+    def checkSourcesDups(self) -> List[str]:
+
+        sourceDups = findDuplicates(self._sources)
+        if len(sourceDups) > 0:
+            print(f"Warning: duplicate sources, lib: {self._name}, dupicates: {sourceDups}")
+
+        # findDuplicates should return empty list
+        return sourceDups
+
+    def checkSourceFilesExist(self) -> List[Path]:
+
+        noExistSources = findNonExistFiles(self._root,
+                                           self._sources)
+
+        if len(noExistSources) > 0:
+            print(f"Warning: source files not found, lib: {self._name}, files: {noExistSources}")
+
+        # findNonExistFiles should return []
+        return noExistSources
+
+    def checkIncludeDupes(self) -> List[str]:
+
+        incDupes = findDuplicates(self._includeDirs.all())
+
+        if len(incDupes) > 0:
+            print(f"Warning: duplicated include directories lib: {self._name}, include dirs: {incDupes}")
+
+        return incDupes
+
+    def checkCompilerFlagDupes(self) -> List[str]:
+
+        compFlagDupes = findDuplicates(self._compilerFlags.all())
+
+        if len(compFlagDupes) > 0:
+            print(f"Warning: duplicated compiler flags lib: {self._name}, flags: {compFlagDupes}")
+
+        return compFlagDupes
+
+    def checkCompilerFlagsValid(self) -> List[str]:
+
+        # TODO
+        # return [ele for ele in self._compilerFlags if ele not in ValidCompileFlags]
+        return []
+
+    def checkCompileDefinitionDupes(self) -> List[str]:
+
+        compDefDupes = findDuplicates(self._compileDefinitions.all())
+
+        if len(compDefDupes) > 0:
+            print(f"Warning: duplicated compiler definitions lib: {self._name}, flags: {compDefDupes}")
+
+        return compDefDupes
+
+    def checkDependencyDupes(self) -> List[str]:
+
+        dupes = findDuplicates(self._dependencies.all())
+
+        if len(dupes) > 0:
+            print(f"Warning: duplicated dependencies lib: {self._name}, dependencies: {dupes}")
+
+        return dupes
+
+    def allInternalChecks(self) -> List[str]:
+
+        retval = {
+            "src_dupes" : self.checkSourcesDups(),
+            "src_noexist" : self.checkSourceFilesExist(),
+            "inc_dupes" : self.checkIncludeDupes(),
+            "flag_dupes" : self.checkCompilerFlagDupes(),
+            "flag_invalid" : self.checkCompilerFlagsValid(),
+            "opt_dupes" : self.checkCompileDefinitionDupes(),
+            "dep_dupes" : self.checkDependencyDupes()
+        }
+
+        return retval
+

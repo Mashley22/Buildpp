@@ -12,7 +12,12 @@ class DuplicateLibraryErr:
                  name : str):
 
         self.libName = name
-        print(f"Duplicate library added {name}")
+        print(f"Error: Duplicate library added {name}")
+
+
+def check_invalid_dependencies(lib : Library):
+
+    return [ele for ele in lib.dependencies.all() if ele not in __libraries.keys()]
 
 
 def add_library(name : str,
