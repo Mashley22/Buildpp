@@ -32,4 +32,14 @@ def findDuplicates(m_list : list) -> list:
     return [item for item, count in counter.items() if count > 1]
 
 
+'''!
+@brief changes a list to remove duplicates while preserving order
+'''
+
+
+def deDuplicateList(m_list : list) -> None:
+
+    m_list = list(dict.fromkeys(m_list))
+
+
 ValidCompileFlags = []  # TODO
