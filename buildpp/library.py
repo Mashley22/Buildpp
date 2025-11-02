@@ -273,12 +273,6 @@ class Library:
 
         return compFlagDupes
 
-    def checkCompilerFlagsValid(self) -> List[str]:
-
-        # TODO
-        # return [ele for ele in self._compilerFlags if ele not in ValidCompileFlags]
-        return []
-
     def checkCompileDefinitionDupes(self) -> List[str]:
 
         compDefDupes = findDuplicates(self._compileDefinitions.all())
@@ -304,7 +298,6 @@ class Library:
             "src_noexist" : self.checkSourceFilesExist(),
             "inc_dupes" : self.checkIncludeDupes(),
             "flag_dupes" : self.checkCompilerFlagDupes(),
-            "flag_invalid" : self.checkCompilerFlagsValid(),
             "opt_dupes" : self.checkCompileDefinitionDupes(),
             "dep_dupes" : self.checkDependencyDupes()
         }
