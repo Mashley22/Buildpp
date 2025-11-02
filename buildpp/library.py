@@ -45,9 +45,27 @@ class LibInterfacingForm:
         retval.extend(self._private)
         retval.extend(self._interface)
 
+    def inheritPublic(self,
+                      other : 'LibInterfacingForm') -> None:
+
+        self._public._list.extend(other._public._list)
+        self._public._list.extend(other._interface._list)
+
+    def inheritPrivate(self,
+                       other : 'LibInterfacingForm') -> None:
+
+        self._private._list.extend(other._public._list)
+        self._private._list.extend(other._interface._list)
+
+    def inheritInterface(self,
+                         other : 'LibInterfacingForm') -> None:
+
+        self._interface._list.extend(other._public._list)
+        self._interface._list.extend(other._interface._list)
+
 
 class DependenciesList:
-    _libs : List['Library']
+    _list : List['Library']
 
     def __init__(self,
                  dependencies : List['Library'] = []):
@@ -56,7 +74,7 @@ class DependenciesList:
 
     @property
     def libs(self) -> List[str]:
-        return self._libs
+        return self._list
 
     def add(self,
             newDependencies : Union[List['Library'], 'Library']) -> None:
@@ -71,7 +89,7 @@ class DependenciesList:
                 newDependecy : 'Library') -> None:
 
         if isinstance(newDependecy, Library):
-            self._libs.append(newDependecy)
+            self._list.append(newDependecy)
         else:
             raise TypeError
 
@@ -171,6 +189,7 @@ class Library:
     _libType : LibType
     _root : Path
     _name : str
+    _dependenciesHandled : bool
 
     def __init__(self,
                  name : str,
@@ -187,6 +206,7 @@ class Library:
         self._compileDefinitions = CompileDefinitions()
         self._libType = libType
         self._name = name
+        self._dependenciesHandled = False
 
     '''!
     @brief RELATIVE
@@ -297,3 +317,47 @@ class Library:
             return True
         else:
             return False
+
+    @property
+    def dependenciesHandled(self) -> bool:
+
+        return self._dependenciesHandled
+
+    def _handlePublicDependencies(self) -> None:
+
+        for dep in self._dependencies.public:
+
+            if dep.dependenciesHandled is not True:
+                dep.handleDependencies()
+
+            self._includeDirs.inheritPublic(dep.includeDirs)
+            self._compileDefinitions.inheritPublic(dep.compileDefs)
+            self._compilerFlags.inheritPublic(dep.compilerFlags)
+
+    def _handlePrivateDependencies(self) -> None:
+
+        for dep in self._dependencies.private:
+
+            if dep.dependenciesHandled is not True:
+                dep.handleDependencies()
+
+            self._includeDirs.inheritPrivate(dep.includeDirs)
+            self._compileDefinitions.inheritPrivate(dep.compileDefs)
+            self._compilerFlags.inheritPrivate(dep.compilerFlags)
+
+    def _handleInterfaceDependencies(self) -> None:
+
+        for dep in self._dependencies.private:
+
+            if dep.dependenciesHandled is not True:
+                dep.handleDependencies()
+
+            self._includeDirs.inheritInterface(dep.includeDirs)
+            self._compileDefinitions.inheritInterface(dep.compileDefs)
+            self._compilerFlags.inheritInterface(dep.compilerFlags)
+
+    def handleDependencies(self) -> None:
+
+        self._handleInterfaceDependencies()
+        self._handlePublicDependencies()
+        self._handlePrivateDependencies()
