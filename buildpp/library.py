@@ -2,7 +2,7 @@ from typing import List, Union, Type, TypeVar
 from enum import Enum
 from pathlib import Path
 
-from .utils import findDuplicates, findNonExistFiles, ValidCompileFlags
+from .utils import findDuplicates, findNonExistFiles, deDuplicateList
 
 
 '''
@@ -93,10 +93,80 @@ class DependenciesList:
         else:
             raise TypeError
 
+    def deDuplicate(self) -> None:
+
+        deDuplicateList(self._list)
+
 
 class Dependencies(LibInterfacingForm):
     def __init__(self):
         super().__init__(DependenciesList)
+
+
+class PathList:
+    _list : List[Path]
+    _root : Path
+
+    def __init__(self,
+                 paths : Union[List[Path], Path] = []):
+
+        self._list = paths
+
+    def _addOneRel(self,
+                   rel : str) -> None:
+
+        self._list.append(self._root / rel)
+
+    def _addOneAbs(self,
+                   abs : Path) -> None:
+
+        self._list.append(abs)
+
+    def addRel(self,
+               relDirs : Union[List[str], str]) -> None:
+
+        if isinstance(relDirs, list):
+            for dir in relDirs:
+                self._addOneRel(dir)
+
+        elif isinstance(relDirs, str):
+            self._addOneRel(relDirs)
+
+        else:
+            raise TypeError
+
+    def addAbs(self,
+               relDirs : Union[List[str], str]) -> None:
+
+        if isinstance(relDirs, list):
+            for dir in relDirs:
+                self._addOneAbs(dir)
+
+        elif isinstance(relDirs, str):
+            self._addOneAbs(relDirs)
+
+        else:
+            raise TypeError
+
+    def deDuplicate(self) -> None:
+
+        deDuplicateList(self._list)
+
+
+class IncludeDirsList(PathList):
+    def __init__(self,
+                 dirs : Union[List[str], str] = []):
+
+        super().__init__(dirs)
+
+    @property
+    def dirs(self) -> List[str]:
+        return super()._list
+
+
+class IncludeDirs(LibInterfacingForm):
+    def __init__(self):
+        super().__init__(IncludeDirsList)
 
 
 class GenericStringList:
@@ -126,21 +196,9 @@ class GenericStringList:
         else:
             self._addOne(newEles)
 
+    def deDuplicate(self) -> None:
 
-class IncludeDirsList(GenericStringList):
-    def __init__(self,
-                 dirs : Union[List[str], str] = []):
-
-        super().__init__(dirs)
-
-    @property
-    def dirs(self) -> List[str]:
-        return super()._list
-
-
-class IncludeDirs(LibInterfacingForm):
-    def __init__(self):
-        super().__init__(IncludeDirsList)
+        deDuplicateList(self._list)
 
 
 class CompilerFlagsList(GenericStringList):
@@ -188,6 +246,7 @@ class Library:
     _compileDefinitions : CompileDefinitions
     _libType : LibType
     _root : Path
+    _subDeps : DependenciesList
     _name : str
     _dependenciesHandled : bool
 
@@ -315,6 +374,15 @@ class Library:
     def dependenciesHandled(self) -> bool:
 
         return self._dependenciesHandled
+
+    def _getSubDependencies(self) -> List['Library']:
+
+        subDeps = []
+
+        for dep in self.dependencies:
+            subDeps.extend(dep._getSubDependencies())
+
+        deDuplicateList(subDeps)
 
     def _handlePublicDependencies(self) -> None:
 
