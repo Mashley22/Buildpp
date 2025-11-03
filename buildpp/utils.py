@@ -38,9 +38,11 @@ def findDuplicates(m_list : list) -> list:
 '''
 
 
-def deDuplicateList(m_list : list) -> None:
+def deDuplicateList(m_list : list) -> list:
 
     m_list = list(dict.fromkeys(m_list))
+
+    return m_list
 
 
 class GenericStringList:
