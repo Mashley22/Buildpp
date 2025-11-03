@@ -5,6 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "buildpp"
 version = "0.1.0"
+license = {file = "LICENSE"}
 description = "c++ (meta)build system totally based in Python"
 authors = [
   {name = "Ashley Hsu", email = "ajkhsu22@gmail.com"},
