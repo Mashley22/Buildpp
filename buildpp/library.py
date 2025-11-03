@@ -2,7 +2,7 @@ from typing import List, Union, Type, TypeVar
 from enum import Enum
 from pathlib import Path
 
-from .utils import findDuplicates, findNonExistFiles, deDuplicateList
+from buildpp.utils import findDuplicates, findNonExistFiles, deDuplicateList, GenericStringList
 
 
 '''
@@ -31,13 +31,28 @@ class LibInterfacingForm:
     def private(self) -> T:
         return self._private
 
+    @private.setter
+    def private(self,
+                priv : T) -> None:
+        self._private = priv
+
     @property
     def public(self) -> T:
         return self._public
 
+    @public.setter
+    def public(self,
+               val : T) -> None:
+        self._public = val
+
     @property
     def interface(self) -> T:
         return self._interface
+
+    @interface.setter
+    def interface(self,
+                  interface : T) -> None:
+        self._interface = interface
 
     def all(self):
         retval = []
@@ -175,36 +190,15 @@ class IncludeDirs(LibInterfacingForm):
         super().__init__(IncludeDirsList)
 
 
-class GenericStringList:
-    _list : List[str]
-
+class SourcesList(GenericStringList):
     def __init__(self,
-                 eles : Union[List[str], str] = []):
-        self._list = []
-        self.add(eles)
+                 sources : Union[List[str], str] = []):
 
-    def _addOne(self,
-                ele : str) -> None:
+        super().__init__(sources)
 
-        if isinstance(ele, str):
-            self._list.append(ele)
-        else:
-            raise TypeError
-
-    def add(self,
-            newEles : Union[List[str], str]) -> None:
-
-        if isinstance(newEles, list):
-            if all(isinstance(ele, str) for ele in newEles):
-                self._list.extend(newEles)
-            else:
-                raise TypeError
-        else:
-            self._addOne(newEles)
-
-    def deDuplicate(self) -> None:
-
-        deDuplicateList(self._list)
+    @property
+    def sources(self) -> List[str]:
+        return super()._list
 
 
 class CompilerFlagsList(GenericStringList):
@@ -245,7 +239,7 @@ class CompileDefinitions(LibInterfacingForm):
 
 class Library:
 
-    _sources : GenericStringList
+    _sources : SourcesList
     _dependencies : Dependencies
     _includeDirs : IncludeDirs
     _compilerFlags : CompilerFlags
@@ -264,7 +258,7 @@ class Library:
         assert isinstance(libType, LibType)
 
         self._root = buildListDir
-        self._sources = GenericStringList()
+        self._sources = SourcesList()
         self._dependencies = Dependencies()
         self._includeDirs = IncludeDirs()
         self._compilerFlags = CompilerFlags()
@@ -277,8 +271,17 @@ class Library:
     @brief RELATIVE
     '''
     @property
-    def sources(self) -> GenericStringList:
+    def sources(self) -> SourcesList:
         return self._sources
+
+    @sources.setter
+    def sources(self,
+                sources : SourcesList) -> None:
+
+        if not isinstance(sources, SourcesList):
+            raise TypeError
+
+        self._sources = sources
 
     @property
     def dependencies(self) -> Dependencies:
@@ -292,13 +295,39 @@ class Library:
     def compilerFlags(self) -> CompilerFlags:
         return self._compilerFlags
 
+    @compilerFlags.setter
+    def compilerFlags(self,
+                      flags : CompilerFlags):
+
+        if not isinstance(flags, CompilerFlags):
+            raise TypeError
+
+        self._compilerFlags = flags
+
     @property
     def compilerDefs(self) -> CompileDefinitions:
         return self._compileDefinitions
 
+    @compilerDefs.setter
+    def compilerDefs(self,
+                     defs : CompileDefinitions):
+
+        if not isinstance(defs, CompileDefinitions):
+            raise TypeError
+
+        self._compilerDefs = defs
+
     @property
     def libType(self) -> LibType:
         return self._libType
+
+    def setLibType(self,
+                   libType : LibType) -> None:
+
+        if not isinstance(libType):
+            raise TypeError
+
+        self._libType = libType
 
     def checkSourcesDups(self) -> List[str]:
 

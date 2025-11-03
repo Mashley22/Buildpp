@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Union
 import Counter
 
 
@@ -42,4 +42,33 @@ def deDuplicateList(m_list : list) -> None:
     m_list = list(dict.fromkeys(m_list))
 
 
-ValidCompileFlags = []  # TODO
+class GenericStringList:
+    _list : List[str]
+
+    def __init__(self,
+                 eles : Union[List[str], str] = []):
+        self._list = []
+        self.add(eles)
+
+    def _addOne(self,
+                ele : str) -> None:
+
+        if isinstance(ele, str):
+            self._list.append(ele)
+        else:
+            raise TypeError
+
+    def add(self,
+            newEles : Union[List[str], str]) -> None:
+
+        if isinstance(newEles, list):
+            if all(isinstance(ele, str) for ele in newEles):
+                self._list.extend(newEles)
+            else:
+                raise TypeError
+        else:
+            self._addOne(newEles)
+
+    def deDuplicate(self) -> None:
+
+        deDuplicateList(self._list)
