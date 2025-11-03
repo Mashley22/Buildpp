@@ -369,13 +369,6 @@ class Library:
 
         return retval
 
-    def header_only(self) -> bool:  # perhaps no_link in future?
-
-        if len(self._sources) == 0:
-            return True
-        else:
-            return False
-
     @property
     def dependenciesHandled(self) -> bool:
 
