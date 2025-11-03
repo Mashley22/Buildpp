@@ -51,17 +51,23 @@ class LibInterfacingForm:
         self._public._list.extend(other._public._list)
         self._public._list.extend(other._interface._list)
 
+        self._public.deDuplicate()
+
     def inheritPrivate(self,
                        other : 'LibInterfacingForm') -> None:
 
         self._private._list.extend(other._public._list)
         self._private._list.extend(other._interface._list)
 
+        self._private.deDuplicate()
+
     def inheritInterface(self,
                          other : 'LibInterfacingForm') -> None:
 
         self._interface._list.extend(other._public._list)
         self._interface._list.extend(other._interface._list)
+
+        self._private.deDuplicate
 
 
 class DependenciesList:
@@ -422,3 +428,5 @@ class Library:
         self._handleInterfaceDependencies()
         self._handlePublicDependencies()
         self._handlePrivateDependencies()
+
+        self._dependenciesHandled = True
