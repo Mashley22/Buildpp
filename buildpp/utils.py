@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import List, Union
-import Counter
+from collections import Counter
 
 __all__ = []
 
