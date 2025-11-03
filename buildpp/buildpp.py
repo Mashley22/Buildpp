@@ -1,7 +1,8 @@
-from .library import Library, LibType
 from pathlib import Path
 import inspect
 import importlib
+
+from buildpp.library import Library, LibType
 
 
 def new_library(name : str,
