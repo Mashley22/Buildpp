@@ -452,3 +452,6 @@ class Library:
         self._handlePrivateDependencies()
 
         self._dependenciesHandled = True
+
+
+__all__ = [name for name in dir() if not name.startswith('_')]

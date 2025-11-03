@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List, Union
 import Counter
 
+__all__ = []
 
 '''!
 @brief recieves a bunch of relative filepaths and a single root path and checks
