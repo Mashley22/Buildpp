@@ -3,6 +3,7 @@ from enum import Enum
 from pathlib import Path
 
 from buildpp.utils import findDuplicates, findNonExistFiles, deDuplicateList, GenericStringList
+from buildpp.versions import Version
 
 
 '''
@@ -249,6 +250,7 @@ class Library:
     _subDeps : DependenciesList
     _name : str
     _dependenciesHandled : bool
+    _version : Version
 
     def __init__(self,
                  name : str,
@@ -266,6 +268,7 @@ class Library:
         self._libType = libType
         self._name = name
         self._dependenciesHandled = False
+        self._version = Version()
 
     '''!
     @brief RELATIVE
@@ -320,6 +323,19 @@ class Library:
     @property
     def libType(self) -> LibType:
         return self._libType
+
+    @property
+    def version(self) -> Version:
+        return self._version
+
+    @version.setter
+    def version(self,
+                val : Version) -> None:
+
+        if not isinstance(val, Version):
+            raise TypeError
+
+        self._version = val
 
     def setLibType(self,
                    libType : LibType) -> None:
