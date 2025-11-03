@@ -4,17 +4,7 @@ import inspect
 import importlib
 
 
-class DuplicateLibraryErr:
-    libName : str
-
-    def __init__(self,
-                 name : str):
-
-        self.libName = name
-        print(f"Error: Duplicate library added {name}")
-
-
-def add_library(name : str,
+def new_library(name : str,
                 libType : LibType = LibType.STATIC) -> Library:
 
     if not isinstance(name, str):
