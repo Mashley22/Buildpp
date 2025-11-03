@@ -40,7 +40,7 @@ def findDuplicates(m_list : list) -> list:
 
 def deDuplicateList(m_list : list) -> list:
 
-    m_list = list(dict.fromkeys(m_list))
+    m_list[:] = list(dict.fromkeys(m_list))
 
     return m_list
 
