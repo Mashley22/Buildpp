@@ -70,10 +70,13 @@ class LibInterfacingForm:
         self._interface = interface
 
     def all(self):
+
         retval = []
-        retval.extend(self._public)
-        retval.extend(self._private)
-        retval.extend(self._interface)
+        retval.extend(self._public._list)
+        retval.extend(self._private._list)
+        retval.extend(self._interface._list)
+
+        return retval
 
     def inheritPublic(self,
                       other : 'LibInterfacingForm') -> None:

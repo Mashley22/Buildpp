@@ -1,6 +1,8 @@
 from buildpp.library import LibInterfacingForm
 from buildpp.utils import deDuplicateList
 
+import pytest
+
 
 class ListCover:
     _list : list
@@ -17,6 +19,14 @@ class ListCover:
     def deDuplicate(self) -> None:
 
         self._list = deDuplicateList(self._list)
+
+
+class ListCover2:
+
+    def __init__(self,
+                 vals : list = []):
+
+        self._list = vals
 
 
 def test_LibInterfacingFrom_basic():
@@ -50,7 +60,7 @@ def test_LibInterfacingForm_inheritPublic():
     parent = LibInterfacingForm(ListCover)
     child = LibInterfacingForm(ListCover)
 
-    parent.public = ListCover([1, 5, 8])
+    parent.public = ListCover([1, 5, 8, 6])
     parent.interface = ListCover([6, 7, 9])
     parent.private = ListCover([10, 11, 12])
 
@@ -66,7 +76,7 @@ def test_LibInterfacingForm_inheritPrivate():
     parent = LibInterfacingForm(ListCover)
     child = LibInterfacingForm(ListCover)
 
-    parent.public = ListCover([1, 5, 8])
+    parent.public = ListCover([1, 5, 8, 6])
     parent.interface = ListCover([6, 7, 9])
     parent.private = ListCover([10, 11, 12])
 
@@ -82,7 +92,7 @@ def test_LibInterfacingForm_inheritInterface():
     parent = LibInterfacingForm(ListCover)
     child = LibInterfacingForm(ListCover)
 
-    parent.public = ListCover([1, 5, 8])
+    parent.public = ListCover([1, 5, 8, 6])
     parent.interface = ListCover([6, 7, 9])
     parent.private = ListCover([10, 11, 12])
 
@@ -91,3 +101,52 @@ def test_LibInterfacingForm_inheritInterface():
     assert child.interface == ListCover([1, 5, 8, 6, 7, 9])
     assert child.private == ListCover()
     assert child.public == ListCover()
+
+
+def test_LibInterfacingForm_all():
+
+    test = LibInterfacingForm(ListCover)
+
+    test.public = ListCover([1, 2, 3, 4])
+    test.private = ListCover([6, 7])
+    test.interface = ListCover([6, 9])
+
+    assert sorted(test.all()) == sorted([1, 2, 3, 4, 6, 7, 6, 9])
+
+
+def test_LibInterfacingForm_inheritTypeAssert():
+
+    one = LibInterfacingForm(ListCover)
+    two = LibInterfacingForm(ListCover2)
+
+    with pytest.raises(AssertionError):
+        one.inheritPublic(two)
+
+    with pytest.raises(AssertionError):
+        one.inheritPrivate(two)
+
+    with pytest.raises(AssertionError):
+        one.inheritInterface(two)
+
+    with pytest.raises(AssertionError):
+        one.inheritPublic(two)
+
+    with pytest.raises(AssertionError):
+        one.inheritPrivate(two)
+
+    with pytest.raises(AssertionError):
+        one.inheritInterface(two)
+
+
+def test_LibInterfacingForm_assignTypeAssert():
+
+    one = LibInterfacingForm(ListCover)
+
+    with pytest.raises(AssertionError):
+        one.public = ListCover2()
+
+    with pytest.raises(AssertionError):
+        one.private = ListCover2()
+
+    with pytest.raises(AssertionError):
+        one.private = ListCover2()
