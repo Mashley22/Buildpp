@@ -1,6 +1,12 @@
 from typing import List
 
 
+class VersionComponentNumMismatchErr(Exception):
+
+    def __init__(self):
+        print("Versions must have the same number of components")
+
+
 """!
 """
 
@@ -28,9 +34,10 @@ class Version:
         self._version.extend(version_list)
 
     def __init__(self,
-                 version_str : str = []) -> None:
+                 version_str : str = None) -> None:
 
-        self._construct(self._parse(version_str))
+        if version_str is not None:
+            self._construct(self._parse(version_str))
 
     def __get__(self) -> str:
 
@@ -49,19 +56,24 @@ class Version:
         if len(self._version) == 0:
             self._construct(num_list)
         else:
+
+            if len(self._version) != len(num_list):
+                raise VersionComponentNumMismatchErr
+
             self._set(num_list)
 
     def _compareCheck(self,
                       other : 'Version') -> None:
+
         if len(self._version) == 0 or len(self._version) != len(other._version):
-            raise TypeError
+            raise VersionComponentNumMismatchErr
 
     def __gt__(self,
                other : 'Version') -> bool:
 
         self._compareCheck(other)
 
-        for i in range(self._version):
+        for i in range(self.components()):
             if self._version[i] > other._version[i]:
                 return True
             if self._version[i] < other._version[i]:
@@ -74,7 +86,7 @@ class Version:
 
         self._compareCheck(other)
 
-        for i in range(self._version):
+        for i in range(self.components()):
             if self._version[i] < other._version[i]:
                 return True
             if self._version[i] > other._version[i]:
@@ -87,7 +99,7 @@ class Version:
 
         self._compareCheck(other)
 
-        for i in range(self._version):
+        for i in range(self.components()):
             if self._version[i] > other._version[i]:
                 return True
             if self._version[i] < other._version[i]:
@@ -100,7 +112,7 @@ class Version:
 
         self._compareCheck(other)
 
-        for i in range(self._version):
+        for i in range(self.components()):
             if self._version[i] < other._version[i]:
                 return True
             if self._version[i] > other._version[i]:
@@ -113,11 +125,15 @@ class Version:
 
         self._compareCheck(other)
 
-        for i in range(self._version):
+        for i in range(self.components()):
             if self._version[i] != other._version[i]:
                 return False
 
         return True
+
+    def components(self) -> int:
+
+        return len(self._version)
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]
