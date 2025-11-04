@@ -22,11 +22,16 @@ class LibInterfacingForm:
     _private : T
     _public : T
     _interface : T
+    _underlying_t : type
 
-    def __init__(self, cls: Type[T]):
+    def __init__(self,
+                 cls : Type[T]):
+
         self._private = cls()
         self._public = cls()
         self._interface = cls()
+
+        self._underlying_t = cls
 
     @property
     def private(self) -> T:
@@ -35,6 +40,9 @@ class LibInterfacingForm:
     @private.setter
     def private(self,
                 priv : T) -> None:
+
+        assert isinstance(priv, self._underlying_t)
+
         self._private = priv
 
     @property
@@ -44,6 +52,9 @@ class LibInterfacingForm:
     @public.setter
     def public(self,
                val : T) -> None:
+
+        assert isinstance(val, self._underlying_t)
+
         self._public = val
 
     @property
@@ -53,6 +64,9 @@ class LibInterfacingForm:
     @interface.setter
     def interface(self,
                   interface : T) -> None:
+
+        assert isinstance(interface, self._underlying_t)
+
         self._interface = interface
 
     def all(self):
@@ -64,6 +78,8 @@ class LibInterfacingForm:
     def inheritPublic(self,
                       other : 'LibInterfacingForm') -> None:
 
+        assert other._underlying_t == self._underlying_t
+
         self._public._list.extend(other._public._list)
         self._public._list.extend(other._interface._list)
 
@@ -71,6 +87,8 @@ class LibInterfacingForm:
 
     def inheritPrivate(self,
                        other : 'LibInterfacingForm') -> None:
+
+        assert other._underlying_t == self._underlying_t
 
         self._private._list.extend(other._public._list)
         self._private._list.extend(other._interface._list)
@@ -80,10 +98,12 @@ class LibInterfacingForm:
     def inheritInterface(self,
                          other : 'LibInterfacingForm') -> None:
 
+        assert other._underlying_t == self._underlying_t
+
         self._interface._list.extend(other._public._list)
         self._interface._list.extend(other._interface._list)
 
-        self._private.deDuplicate
+        self._interface.deDuplicate
 
 
 class DependenciesList:
