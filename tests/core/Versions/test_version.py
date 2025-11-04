@@ -1,4 +1,4 @@
-from buildpp.versions import Version, VersionComponentNumMismatchErr
+from buildpp.versions import Version
 import pytest
 
 
@@ -29,7 +29,7 @@ def test_Version_eq():
     assert Version("99.89") == Version("99.89")
     assert Version("9.1.0") == Version("9.1.0")
 
-    with pytest.raises(VersionComponentNumMismatchErr):
+    with pytest.raises(AssertionError):
         Version("4") == Version("6.1")
 
 
@@ -39,7 +39,7 @@ def test_Version_lt():
     assert Version("4.1") < Version("5.0")
     assert Version("0.98.1") < Version("1.5.0")
 
-    with pytest.raises(VersionComponentNumMismatchErr):
+    with pytest.raises(AssertionError):
         Version("4") < Version("6.1")
 
 
@@ -53,7 +53,7 @@ def test_Version_le():
     assert Version("99.89") <= Version("99.89")
     assert Version("9.1.0") <= Version("9.1.0")
 
-    with pytest.raises(VersionComponentNumMismatchErr):
+    with pytest.raises(AssertionError):
         Version("6") <= Version("6.1")
 
 
@@ -63,7 +63,7 @@ def test_Version_gt():
     assert Version("9.1") > Version("5.0")
     assert Version("4.98.1") > Version("1.5.0")
 
-    with pytest.raises(VersionComponentNumMismatchErr):
+    with pytest.raises(AssertionError):
         Version("9.98") > Version("4")
 
 
@@ -77,5 +77,5 @@ def test_Version_ge():
     assert Version("6.7") >= Version("6.7")
     assert Version("4.2.0") >= Version("4.2.0")
 
-    with pytest.raises(VersionComponentNumMismatchErr):
+    with pytest.raises(AssertionError):
         Version("9.98") >= Version("4")

@@ -1,10 +1,9 @@
 from typing import List
 
 
-class VersionComponentNumMismatchErr(Exception):
+def _VersionComponentNumMismatchErr() -> str:
 
-    def __init__(self):
-        print("Versions must have the same number of components")
+    return "Versions must have the same number of components"
 
 
 """!
@@ -57,16 +56,14 @@ class Version:
             self._construct(num_list)
         else:
 
-            if len(self._version) != len(num_list):
-                raise VersionComponentNumMismatchErr
+            assert len(self._version) == len(num_list), _VersionComponentNumMismatchErr()
 
             self._set(num_list)
 
     def _compareCheck(self,
                       other : 'Version') -> None:
 
-        if len(self._version) == 0 or len(self._version) != len(other._version):
-            raise VersionComponentNumMismatchErr
+        assert len(self._version) != 0 and len(self._version) == len(other._version), _VersionComponentNumMismatchErr()
 
     def __gt__(self,
                other : 'Version') -> bool:
