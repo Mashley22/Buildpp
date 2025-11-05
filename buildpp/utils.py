@@ -14,7 +14,7 @@ whether these all exist
 def findNonExistFiles(root : Path,
                       relPaths : List[str]) -> List[Path]:
 
-    retval = []
+    retval = list()
 
     for rel in relPaths:
         absolutePath = root / rel
@@ -49,8 +49,9 @@ class GenericStringList:
     _list : List[str]
 
     def __init__(self,
-                 eles : Union[List[str], str] = []):
-        self._list = []
+                 eles : Union[List[str], str] = None):
+
+        self._list = [] if eles is None else eles
         self.add(eles)
 
     def _addOne(self,

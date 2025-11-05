@@ -113,9 +113,12 @@ class DependenciesList:
     _list : List['Library']
 
     def __init__(self,
-                 dependencies : List['Library'] = []):
+                 dependencies : List['Library'] = None):
 
-        self.add(dependencies)
+        if dependencies is not None:
+            self.add(dependencies)
+        else:
+            self._list = []
 
     @property
     def libs(self) -> List[str]:
@@ -153,54 +156,79 @@ class PathList:
     _root : Path
 
     def __init__(self,
-                 paths : Union[List[Path], Path] = []):
+                 root : Path = None):
 
-        self._list = paths
+        self._root = root
+
+        self._list = []
 
     def _addOneRel(self,
                    rel : str) -> None:
+
+        assert self._root is not None, "Assign a root before using relative additions"
+        assert isinstance(rel, str), "TypeError"
 
         self._list.append(self._root / rel)
 
     def _addOneAbs(self,
                    abs : Path) -> None:
 
+        assert isinstance(abs, Path), "TypeError"
+
         self._list.append(abs)
 
     def addRel(self,
-               relDirs : Union[List[str], str]) -> None:
+               relPaths : Union[List[str], str]) -> None:
 
-        if isinstance(relDirs, list):
-            for dir in relDirs:
-                self._addOneRel(dir)
+        if isinstance(relPaths, list):
+            for path in relPaths:
+                self._addOneRel(path)
 
-        elif isinstance(relDirs, str):
-            self._addOneRel(relDirs)
+        elif isinstance(relPaths, str):
+            self._addOneRel(relPaths)
 
         else:
-            raise TypeError
+            assert False, "TypeError"
 
     def addAbs(self,
-               relDirs : Union[List[str], str]) -> None:
+               absPaths : Union[List[Path], Path]) -> None:
 
-        if isinstance(relDirs, list):
-            for dir in relDirs:
-                self._addOneAbs(dir)
+        if isinstance(absPaths, list):
+            for path in absPaths:
+                self._addOneAbs(path)
 
-        elif isinstance(relDirs, str):
-            self._addOneAbs(relDirs)
+        elif isinstance(absPaths, Path):
+            self._addOneAbs(absPaths)
 
         else:
-            raise TypeError
+            assert False, "TypeError"
 
     def deDuplicate(self) -> None:
 
         deDuplicateList(self._list)
 
+    @property
+    def paths(self) -> List[Path]:
+
+        return self._list
+
+    @property
+    def root(self) -> Path:
+
+        return self._root
+
+    @root.setter
+    def root(self,
+             root : Path) -> None:
+
+        assert isinstance(root, Path), "Root must be of type pathlib.Path"
+
+        self._root = root
+
 
 class IncludeDirsList(PathList):
     def __init__(self,
-                 dirs : Union[List[str], str] = []):
+                 dirs : Union[List[str], str] = None):
 
         super().__init__(dirs)
 
@@ -216,7 +244,7 @@ class IncludeDirs(LibInterfacingForm):
 
 class SourcesList(GenericStringList):
     def __init__(self,
-                 sources : Union[List[str], str] = []):
+                 sources : Union[List[str], str] = None):
 
         super().__init__(sources)
 
@@ -227,7 +255,7 @@ class SourcesList(GenericStringList):
 
 class CompilerFlagsList(GenericStringList):
     def __init__(self,
-                 flags : Union[List[str], str] = []):
+                 flags : Union[List[str], str] = None):
 
         super().__init__(flags)
 
@@ -243,7 +271,7 @@ class CompilerFlags(LibInterfacingForm):
 
 class CompileDefinitionsList(GenericStringList):
     def __init__(self,
-                 defs : List[str] = []):
+                 defs : List[str] = None):
         super().__init__(defs)
 
     @property
