@@ -162,33 +162,32 @@ class Dependencies(LibInterfacingForm):
 
 
 class PathList:
-    _list : List[Path]
-    _root : Path
+    __list : List[Path]
+    __root : Path
 
     def __init__(self,
                  root : Path = None):
 
-        self._root = root
+        self.__root = root
+        self.__list = []
 
-        self._list = []
+    def __addOneRel(self,
+                    rel : str) -> None:
 
-    def _addOneRel(self,
-                   rel : str) -> None:
-
-        self._list.append(self._root / rel)
+        self.__list.append(self.__root / rel)
 
     def addRel(self,
                relPaths : Union[Iterable[str], str]) -> None:
 
-        assert self._root is not None, "Assign a root before using relative additions"
+        assert self.__root is not None, "Assign a root before using relative additions"
 
         if isinstance(relPaths, str):
-            self._addOneRel(relPaths)
+            self.__addOneRel(relPaths)
 
         elif isinstance(relPaths, abc.Iterable):
             if all(isinstance(x, str) for x in relPaths):
                 for path in relPaths:
-                    self._addOneRel(path)
+                    self.__addOneRel(path)
             else:
                 assert False, "TypeError"
 
@@ -199,11 +198,11 @@ class PathList:
                absPaths : Union[Iterable[Path], Path]) -> None:
 
         if isinstance(absPaths, Path):
-            self._list.append(absPaths)
+            self.__list.append(absPaths)
 
         elif isinstance(absPaths, abc.Iterable):
             if all(isinstance(x, Path) for x in absPaths):
-                self._list.extend(absPaths)
+                self.__list.extend(absPaths)
             else:
                 assert False, "TypeError"
 
@@ -212,17 +211,34 @@ class PathList:
 
     def deDuplicate(self) -> None:
 
-        deDuplicateList(self._list)
+        deDuplicateList(self.__list)
 
     @property
     def paths(self) -> List[Path]:
 
-        return self._list
+        return self.__list
+
+    @property
+    def _list(self) -> List[Path]:
+
+        return self.__list
+
+    @_list.setter
+    def _list(self,
+              val : Iterable[Path]) -> None:
+
+        if isinstance(val, abc.Iterable):
+            if all(isinstance(x, Path) for x in val):
+                self.__list = val
+            else:
+                assert False, "TypeError"
+        else:
+            assert False, "TypeError"
 
     @property
     def root(self) -> Path:
 
-        return self._root
+        return self.__root
 
     @root.setter
     def root(self,
@@ -230,7 +246,7 @@ class PathList:
 
         assert isinstance(root, Path), "Root must be of type pathlib.Path"
 
-        self._root = root
+        self.__root = root
 
 
 class IncludeDirsList(PathList):
@@ -240,12 +256,16 @@ class IncludeDirsList(PathList):
         super().__init__()
 
         if pathList is not None:
-            super().root = pathList.root
-            super()._list = pathList._list
+
+            if pathList.root is not None:
+                self.root = Path(pathList.root)
+
+            if pathList._list is not None:
+                self._list = list(pathList._list)
 
     @property
-    def dirs(self) -> List[str]:
-        return super()._list
+    def dirs(self) -> List[Path]:
+        return self._list
 
 
 def new_AbsIncludeDirsList(absDirsList : Union[Path, List[Path]]) -> IncludeDirsList:
