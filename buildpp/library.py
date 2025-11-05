@@ -114,7 +114,7 @@ class DependenciesList:
     _list : List['Library']
 
     def __init__(self,
-                 dependencies : List['Library'] = None):
+                 dependencies : Iterable['Library'] = None):
 
         if dependencies is not None:
             self.add(dependencies)
@@ -126,21 +126,19 @@ class DependenciesList:
         return self._list
 
     def add(self,
-            newDependencies : Union[List['Library'], 'Library']) -> None:
+            newDependencies : Union[Iterable['Library'], 'Library']) -> None:
 
-        if isinstance(newDependencies, list):
-            for ele in newDependencies:
-                self._addOne(ele)
+        if isinstance(newDependencies, Library):
+            self._list.append(newDependencies)
+
+        elif isinstance(newDependencies, abc.Iterable):
+            if all(isinstance(x, Library) for x in newDependencies):
+                self._list.extend(newDependencies)
+            else:
+                assert False, "TypeError"
+
         else:
             self._addOne(newDependencies)
-
-    def _addOne(self,
-                newDependecy : 'Library') -> None:
-
-        if isinstance(newDependecy, Library):
-            self._list.append(newDependecy)
-        else:
-            raise TypeError
 
     def deDuplicate(self) -> None:
 
