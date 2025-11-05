@@ -1,6 +1,7 @@
-from typing import List, Union, Type, TypeVar
+from typing import List, Union, Type, TypeVar, Iterable
 from enum import Enum
 from pathlib import Path
+import collections.abc as abc
 
 from buildpp.utils import findDuplicates, findNonExistFiles, deDuplicateList, GenericStringList
 from buildpp.versions import Version
@@ -165,40 +166,37 @@ class PathList:
     def _addOneRel(self,
                    rel : str) -> None:
 
-        assert self._root is not None, "Assign a root before using relative additions"
-        assert isinstance(rel, str), "TypeError"
-
         self._list.append(self._root / rel)
 
-    def _addOneAbs(self,
-                   abs : Path) -> None:
-
-        assert isinstance(abs, Path), "TypeError"
-
-        self._list.append(abs)
-
     def addRel(self,
-               relPaths : Union[List[str], str]) -> None:
+               relPaths : Union[Iterable[str], str]) -> None:
 
-        if isinstance(relPaths, list):
-            for path in relPaths:
-                self._addOneRel(path)
+        assert self._root is not None, "Assign a root before using relative additions"
 
-        elif isinstance(relPaths, str):
+        if isinstance(relPaths, str):
             self._addOneRel(relPaths)
+
+        elif isinstance(relPaths, abc.Iterable):
+            if all(isinstance(x, str) for x in relPaths):
+                for path in relPaths:
+                    self._addOneRel(path)
+            else:
+                assert False, "TypeError"
 
         else:
             assert False, "TypeError"
 
     def addAbs(self,
-               absPaths : Union[List[Path], Path]) -> None:
+               absPaths : Union[Iterable[Path], Path]) -> None:
 
-        if isinstance(absPaths, list):
-            for path in absPaths:
-                self._addOneAbs(path)
+        if isinstance(absPaths, Path):
+            self._list.append(absPaths)
 
-        elif isinstance(absPaths, Path):
-            self._addOneAbs(absPaths)
+        elif isinstance(absPaths, abc.Iterable):
+            if all(isinstance(x, Path) for x in absPaths):
+                self._list.extend(absPaths)
+            else:
+                assert False, "TypeError"
 
         else:
             assert False, "TypeError"
@@ -228,17 +226,42 @@ class PathList:
 
 class IncludeDirsList(PathList):
     def __init__(self,
-                 dirs : Union[List[str], str] = None):
+                 pathList : PathList = None):
 
-        super().__init__(dirs)
+        super().__init__()
+
+        if pathList is not None:
+            super().root = pathList.root
+            super()._list = pathList._list
 
     @property
     def dirs(self) -> List[str]:
         return super()._list
 
 
+def new_AbsIncludeDirsList(absDirsList : Union[Path, List[Path]]) -> IncludeDirsList:
+
+    pathList = PathList()
+    pathList.addAbs(absDirsList)
+
+    return IncludeDirsList(pathList)
+
+
+def new_RelIncludeDirsList(relDirsList : Union[str, List[str]],
+                           root : Path = None) -> IncludeDirsList:
+
+    if root is None:
+        root = Path(__file__).parent
+
+    pathList = PathList(root)
+    pathList.addRel(relDirsList)
+
+    return IncludeDirsList(pathList)
+
+
 class IncludeDirs(LibInterfacingForm):
     def __init__(self):
+
         super().__init__(IncludeDirsList)
 
 
