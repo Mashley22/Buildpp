@@ -34,6 +34,17 @@ class LibInterfacingForm:
 
         self._underlying_t = cls
 
+    def _setterTypeCheck(self,
+                         accessLvl : str,
+                         setVal) -> None:
+
+        assert self._underlying_t == type(setVal), "{type} setter type mismatch! Needs to be {self._underlying_t}, got {type(setVal)}"
+
+    def _inheritTypeCheck(self,
+                          other : "LibInterfacingForm") -> None:
+
+        assert self._underlying_t == other._underlying_t, f"Inherit type mismatch, expected {self._underlying_t}, got {other._underlying_t}"
+
     @property
     def private(self) -> T:
         return self._private
@@ -42,7 +53,7 @@ class LibInterfacingForm:
     def private(self,
                 priv : T) -> None:
 
-        assert isinstance(priv, self._underlying_t)
+        self._setterTypeCheck("private", priv)
 
         self._private = priv
 
@@ -54,7 +65,7 @@ class LibInterfacingForm:
     def public(self,
                val : T) -> None:
 
-        assert isinstance(val, self._underlying_t)
+        self._setterTypeCheck("public", val)
 
         self._public = val
 
@@ -66,7 +77,7 @@ class LibInterfacingForm:
     def interface(self,
                   interface : T) -> None:
 
-        assert isinstance(interface, self._underlying_t)
+        self._setterTypeCheck("interface", interface)
 
         self._interface = interface
 
@@ -82,7 +93,7 @@ class LibInterfacingForm:
     def inheritPublic(self,
                       other : 'LibInterfacingForm') -> None:
 
-        assert other._underlying_t == self._underlying_t
+        self._inheritTypeCheck(other)
 
         self._public._list.extend(other._public._list)
         self._public._list.extend(other._interface._list)
@@ -92,7 +103,7 @@ class LibInterfacingForm:
     def inheritPrivate(self,
                        other : 'LibInterfacingForm') -> None:
 
-        assert other._underlying_t == self._underlying_t
+        self._inheritTypeCheck(other)
 
         self._private._list.extend(other._public._list)
         self._private._list.extend(other._interface._list)
@@ -102,7 +113,7 @@ class LibInterfacingForm:
     def inheritInterface(self,
                          other : 'LibInterfacingForm') -> None:
 
-        assert other._underlying_t == self._underlying_t
+        self._inheritTypeCheck(other)
 
         self._interface._list.extend(other._public._list)
         self._interface._list.extend(other._interface._list)
