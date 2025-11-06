@@ -51,23 +51,24 @@ class GenericStringList:
     def __init__(self,
                  eles : Iterable[str] | str = None):
 
-        self.__list = [] if eles is None else eles
-        self.add(eles)
+        self.__list = []
+
+        if eles is not None:
+            self.add(eles)
 
     def _addOne(self,
                 ele : str) -> None:
 
-        assert isinstance(ele, str), "TypeError"
         self.__list.append(ele)
 
     def add(self,
             newEles : Iterable[str] | str) -> None:
 
-        if isinstance(newEles, abc.Iterable) and all(isinstance(ele, str) for ele in newEles):
-            self.__list.extend(newEles)
-
-        elif isinstance(newEles, str):
+        if isinstance(newEles, str):
             self._addOne(newEles)
+
+        elif isinstance(newEles, abc.Iterable) and all(isinstance(ele, str) for ele in newEles):
+            self.__list.extend(newEles)
 
         else:
             assert False, "TypeError"
