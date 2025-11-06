@@ -1,6 +1,7 @@
 from pathlib import Path
-from typing import List
+from typing import List, Iterable
 from collections import Counter
+import collections.abc as abc
 
 __all__ = []
 
@@ -12,7 +13,7 @@ whether these all exist
 
 
 def findNonExistFiles(root : Path,
-                      relPaths : List[str]) -> List[Path]:
+                      relPaths : Iterable[str]) -> List[Path]:
 
     retval = list()
 
@@ -24,10 +25,9 @@ def findNonExistFiles(root : Path,
     return retval
 
 
-def findDuplicates(m_list : list) -> list:
+def findDuplicates(m_list : Iterable) -> list:
 
-    if not isinstance(m_list, list):
-        raise TypeError
+    assert isinstance(m_list, abc.Iterable), "TypeError"
 
     counter = Counter(m_list)
     return [item for item, count in counter.items() if count > 1]
@@ -49,7 +49,7 @@ class GenericStringList:
     _list : List[str]
 
     def __init__(self,
-                 eles : List[str] | str = None):
+                 eles : Iterable[str] | str = None):
 
         self._list = [] if eles is None else eles
         self.add(eles)
@@ -57,21 +57,20 @@ class GenericStringList:
     def _addOne(self,
                 ele : str) -> None:
 
-        if isinstance(ele, str):
-            self._list.append(ele)
-        else:
-            raise TypeError
+        assert isinstance(ele, str), "TypeError"
+        self._list.append(ele)
 
     def add(self,
-            newEles : List[str] | str) -> None:
+            newEles : Iterable[str] | str) -> None:
 
-        if isinstance(newEles, list):
-            if all(isinstance(ele, str) for ele in newEles):
-                self._list.extend(newEles)
-            else:
-                raise TypeError
-        else:
+        if isinstance(newEles, abc.Iterable) and all(isinstance(ele, str) for ele in newEles):
+            self._list.extend(newEles)
+
+        elif isinstance(newEles, str):
             self._addOne(newEles)
+
+        else:
+            assert False, "TypeError"
 
     def deDuplicate(self) -> None:
 
