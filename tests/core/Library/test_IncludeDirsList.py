@@ -1,6 +1,6 @@
 from buildpp.library import PathList, IncludeDirsList, new_AbsIncludeDirsList, new_RelIncludeDirsList
 
-from test_PathList import absPaths
+from test_PathList import absPaths, relPaths
 
 from pathlib import Path
 
@@ -36,7 +36,7 @@ def test_IncludeDirsList_construct_PathList():
     var.addAbs(absPaths)
 
     test = IncludeDirsList(var)
-    assert test.dirs == absPaths
+    assert sorted(test.dirs) == sorted(absPaths)
     assert test.root == Path(__file__) and test.root == var.root
 
     # dirs only
@@ -44,5 +44,27 @@ def test_IncludeDirsList_construct_PathList():
     var.addAbs(absPaths)
 
     test = IncludeDirsList(var)
-    assert test.dirs == absPaths
+    assert sorted(test.dirs) == sorted(absPaths)
     assert test.root is None
+
+
+def test_IncludeDirsList_new_AbsIncludeDirsList():
+
+    test = new_AbsIncludeDirsList(absPaths)
+
+    assert test.root is None
+    assert sorted(test.dirs) == sorted(absPaths)
+
+
+def test_IncludeDirsList_new_RelIncludeDirsList():
+
+    test = new_RelIncludeDirsList(relPaths)
+
+    assert test.root == Path(__file__).parent
+    assert sorted(test.dirs) == sorted([Path(__file__).parent / x for x in relPaths])
+
+    testRoot = Path("testPath")
+    test = new_RelIncludeDirsList(relPaths, testRoot)
+
+    assert test.root == testRoot
+    assert sorted(test.dirs) == sorted([testRoot / x for x in relPaths])
