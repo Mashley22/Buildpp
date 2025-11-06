@@ -380,7 +380,7 @@ class CompileDefinitions(LibInterfacingForm):
 
 
 '''!
-@warning Do not create Library objects directly please, use the @ref AddLibrary function
+@warning Do not create Library objects directly please, use the @ref new_Library function
 '''
 
 
@@ -444,8 +444,7 @@ class Library:
     def compilerFlags(self,
                       flags : CompilerFlags):
 
-        if not isinstance(flags, CompilerFlags):
-            raise TypeError
+        assert isinstance(flags, CompilerFlags), "TypeError"
 
         self.__compilerFlags = flags
 
@@ -457,8 +456,7 @@ class Library:
     def compilerDefs(self,
                      defs : CompileDefinitions):
 
-        if not isinstance(defs, CompileDefinitions):
-            raise TypeError
+        assert isinstance(defs, CompileDefinitions), "TypeError"
 
         self.__compilerDefinitions = defs
 

@@ -46,7 +46,7 @@ class Test_Library:
                     test.setLibType(ele)
 
 # ____________________SOURCES____________________
-    class Test_Sources:
+    class Test_sources:
         def test_basic(self):
 
             test = new_Library("sources")
@@ -68,7 +68,7 @@ class Test_Library:
                     test.sources = ele
 
 # ____________________VERSION____________________
-    class Test_Version:
+    class Test_version:
         def test_basic(self):
 
             test = new_Library("version")
@@ -87,3 +87,27 @@ class Test_Library:
             for ele in errVals:
                 with pytest.raises(AssertionError):
                     test.version = ele
+
+# ____________________COMPILER_FLAGS____________________
+    class Test_compilerFlags:
+        def test_TypeError(self):
+
+            test = new_Library("flags")
+
+            errVals = [90, "foo", list()]
+            
+            for ele in errVals:
+                with pytest.raises(AssertionError):
+                    test.compilerFlags = ele
+
+# ____________________COMPILER_FLAGS____________________
+    class Test_compileDefinitions:
+        def test_TypeError(self):
+
+            test = new_Library("defs")
+
+            errVals = [90, "foo", list()]
+            
+            for ele in errVals:
+                with pytest.raises(AssertionError):
+                    test.compilerDefs = ele
