@@ -37,13 +37,18 @@ class LibInterfacingForm:
     '''
 
     def __init__(self,
-                 cls : Type[T]):
-
-        self.__private = cls()
-        self.__public = cls()
-        self.__interface = cls()
+                 cls : Type[T],
+                 public = None,
+                 private = None,
+                 interface = None):
 
         self.__underlying_t = cls
+
+        self.public = public if public is not None else cls()
+
+        self.private = private if private is not None else cls()
+
+        self.interface = interface if interface is not None else cls()
 
     def _setterTypeCheck(self,
                          accessLvl : str,
@@ -187,8 +192,15 @@ class DependenciesList:
 
 
 class Dependencies(LibInterfacingForm):
-    def __init__(self):
-        super().__init__(DependenciesList)
+    def __init__(self,
+                 public : DependenciesList = None,
+                 private : DependenciesList = None,
+                 interface : DependenciesList = None):
+
+        super().__init__(DependenciesList,
+                         public,
+                         private,
+                         interface)
 
 
 class PathList:
@@ -314,9 +326,15 @@ def new_RelIncludeDirsList(relDirsList : str | List[str],
 
 
 class IncludeDirs(LibInterfacingForm):
-    def __init__(self):
+    def __init__(self,
+                 public : IncludeDirsList = None,
+                 private : IncludeDirsList = None,
+                 interface : IncludeDirsList = None):
 
-        super().__init__(IncludeDirsList)
+        super().__init__(IncludeDirsList,
+                         public,
+                         private,
+                         interface)
 
 
 class SourcesList(GenericStringList):
