@@ -46,25 +46,25 @@ def deDuplicateList(m_list : list) -> list:
 
 
 class GenericStringList:
-    _list : List[str]
+    __list : List[str]
 
     def __init__(self,
                  eles : Iterable[str] | str = None):
 
-        self._list = [] if eles is None else eles
+        self.__list = [] if eles is None else eles
         self.add(eles)
 
     def _addOne(self,
                 ele : str) -> None:
 
         assert isinstance(ele, str), "TypeError"
-        self._list.append(ele)
+        self.__list.append(ele)
 
     def add(self,
             newEles : Iterable[str] | str) -> None:
 
         if isinstance(newEles, abc.Iterable) and all(isinstance(ele, str) for ele in newEles):
-            self._list.extend(newEles)
+            self.__list.extend(newEles)
 
         elif isinstance(newEles, str):
             self._addOne(newEles)
@@ -74,4 +74,23 @@ class GenericStringList:
 
     def deDuplicate(self) -> None:
 
-        deDuplicateList(self._list)
+        deDuplicateList(self.__list)
+
+    '''!
+    @friend LibInterfaceForm
+    '''
+    @property
+    def _list(self) -> List[str]:
+
+        return self.__list
+
+    '''!
+    @friend LibInterfaceForm
+    '''
+    @_list.setter
+    def _list(self,
+              val : List[str]):
+
+        assert isinstance(val, list) and all(isinstance(x, str) for x in val), "TypeError"
+
+        self.__list = val

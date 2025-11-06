@@ -19,36 +19,46 @@ class LibType(Enum):
     SHARED = 0
 
 
+"""!
+@brief A generalised template class over public, pivate and interface accesses
+@note to use a class with this it must have a property and setter over the _list attribute and a deDuplicate function
+"""
+
+
 class LibInterfacingForm:
     T = TypeVar('T')
-    _private : T
-    _public : T
-    _interface : T
-    _underlying_t : type
+    __private : T
+    __public : T
+    __interface : T
+    __underlying_t : type
+
+    '''!
+    @tparam cls the underling type for each access member
+    '''
 
     def __init__(self,
                  cls : Type[T]):
 
-        self._private = cls()
-        self._public = cls()
-        self._interface = cls()
+        self.__private = cls()
+        self.__public = cls()
+        self.__interface = cls()
 
-        self._underlying_t = cls
+        self.__underlying_t = cls
 
     def _setterTypeCheck(self,
                          accessLvl : str,
                          setVal) -> None:
 
-        assert self._underlying_t == type(setVal), "{type} setter type mismatch! Needs to be {self._underlying_t}, got {type(setVal)}"
+        assert self.__underlying_t == type(setVal), f"{type} setter type mismatch! Needs to be {self.__underlying_t}, got {type(setVal)}"
 
     def _inheritTypeCheck(self,
                           other : "LibInterfacingForm") -> None:
 
-        assert self._underlying_t == other._underlying_t, f"Inherit type mismatch, expected {self._underlying_t}, got {other._underlying_t}"
+        assert self.__underlying_t == other.__underlying_t, f"Inherit type mismatch, expected {self.__underlying_t}, got {other.__underlying_t}"
 
     @property
     def private(self) -> T:
-        return self._private
+        return self.__private
 
     @private.setter
     def private(self,
@@ -56,11 +66,11 @@ class LibInterfacingForm:
 
         self._setterTypeCheck("private", priv)
 
-        self._private = priv
+        self.__private = priv
 
     @property
     def public(self) -> T:
-        return self._public
+        return self.__public
 
     @public.setter
     def public(self,
@@ -68,11 +78,11 @@ class LibInterfacingForm:
 
         self._setterTypeCheck("public", val)
 
-        self._public = val
+        self.__public = val
 
     @property
     def interface(self) -> T:
-        return self._interface
+        return self.__interface
 
     @interface.setter
     def interface(self,
@@ -80,14 +90,14 @@ class LibInterfacingForm:
 
         self._setterTypeCheck("interface", interface)
 
-        self._interface = interface
+        self.__interface = interface
 
     def all(self):
 
         retval = []
-        retval.extend(self._public._list)
-        retval.extend(self._private._list)
-        retval.extend(self._interface._list)
+        retval.extend(self.__public._list)
+        retval.extend(self.__private._list)
+        retval.extend(self.__interface._list)
 
         return retval
 
@@ -96,34 +106,39 @@ class LibInterfacingForm:
 
         self._inheritTypeCheck(other)
 
-        self._public._list.extend(other._public._list)
-        self._public._list.extend(other._interface._list)
+        self.__public._list.extend(other.__public._list)
+        self.__public._list.extend(other.__interface._list)
 
-        self._public.deDuplicate()
+        self.__public.deDuplicate()
 
     def inheritPrivate(self,
                        other : 'LibInterfacingForm') -> None:
 
         self._inheritTypeCheck(other)
 
-        self._private._list.extend(other._public._list)
-        self._private._list.extend(other._interface._list)
+        self.__private._list.extend(other.__public._list)
+        self.__private._list.extend(other.__interface._list)
 
-        self._private.deDuplicate()
+        self.__private.deDuplicate()
 
     def inheritInterface(self,
                          other : 'LibInterfacingForm') -> None:
 
         self._inheritTypeCheck(other)
 
-        self._interface._list.extend(other._public._list)
-        self._interface._list.extend(other._interface._list)
+        self.__interface._list.extend(other.__public._list)
+        self.__interface._list.extend(other.__interface._list)
 
-        self._interface.deDuplicate
+        self.__interface.deDuplicate()
+
+
+'''!
+@brief a class to contain a list of dependencies
+'''
 
 
 class DependenciesList:
-    _list : List['Library']
+    __list : List['Library']
 
     def __init__(self,
                  dependencies : Iterable['Library'] = None):
@@ -131,27 +146,44 @@ class DependenciesList:
         if dependencies is not None:
             self.add(dependencies)
         else:
-            self._list = []
+            self.__list = []
 
     @property
-    def libs(self) -> List[str]:
-        return self._list
+    def libs(self) -> List['Library']:
+        return self.__list
 
     def add(self,
             newDependencies : Iterable['Library'] | 'Library') -> None:
 
         if isinstance(newDependencies, Library):
-            self._list.append(newDependencies)
+            self.__list.append(newDependencies)
 
         elif isinstance(newDependencies, abc.Iterable) and all(isinstance(x, Library) for x in newDependencies):
-            self._list.extend(newDependencies)
+            self.__list.extend(newDependencies)
 
         else:
             assert False, "TypeError"
 
     def deDuplicate(self) -> None:
 
-        deDuplicateList(self._list)
+        deDuplicateList(self.__list)
+
+    '''!
+    @friend LibInterfaceForm
+    '''
+    @property
+    def _list(self) -> List['Library']:
+
+        return self.__list
+
+    '''!
+    @friend LibInterfaceForm
+    '''
+    @_list.setter
+    def _list(self,
+              val : List['Library']) -> None:
+
+        self.__list = val
 
 
 class Dependencies(LibInterfacingForm):
@@ -210,11 +242,17 @@ class PathList:
 
         return self.__list
 
+    '''!
+    @friend LibInterfaceForm
+    '''
     @property
     def _list(self) -> List[Path]:
 
         return self.__list
 
+    '''!
+    @friend LibInterfaceForm
+    '''
     @_list.setter
     def _list(self,
               val : Iterable[Path]) -> None:
