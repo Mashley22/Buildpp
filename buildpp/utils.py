@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Union
+from typing import List
 from collections import Counter
 
 __all__ = []
@@ -49,7 +49,7 @@ class GenericStringList:
     _list : List[str]
 
     def __init__(self,
-                 eles : Union[List[str], str] = None):
+                 eles : List[str] | str = None):
 
         self._list = [] if eles is None else eles
         self.add(eles)
@@ -63,7 +63,7 @@ class GenericStringList:
             raise TypeError
 
     def add(self,
-            newEles : Union[List[str], str]) -> None:
+            newEles : List[str] | str) -> None:
 
         if isinstance(newEles, list):
             if all(isinstance(ele, str) for ele in newEles):

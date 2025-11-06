@@ -1,4 +1,4 @@
-from typing import List, Union, Type, TypeVar, Iterable
+from typing import List, Type, TypeVar, Iterable
 from enum import Enum
 from pathlib import Path
 import collections.abc as abc
@@ -138,7 +138,7 @@ class DependenciesList:
         return self._list
 
     def add(self,
-            newDependencies : Union[Iterable['Library'], 'Library']) -> None:
+            newDependencies : Iterable['Library'] | 'Library') -> None:
 
         if isinstance(newDependencies, Library):
             self._list.append(newDependencies)
@@ -178,7 +178,7 @@ class PathList:
         self.__list.append(self.__root / rel)
 
     def addRel(self,
-               relPaths : Union[Iterable[str], str]) -> None:
+               relPaths : Iterable[str] | str) -> None:
 
         assert self.__root is not None, "Assign a root before using relative additions"
 
@@ -196,7 +196,7 @@ class PathList:
             assert False, "TypeError"
 
     def addAbs(self,
-               absPaths : Union[Iterable[Path], Path]) -> None:
+               absPaths : Iterable[Path] | Path) -> None:
 
         if isinstance(absPaths, Path):
             self.__list.append(absPaths)
@@ -269,7 +269,7 @@ class IncludeDirsList(PathList):
         return self._list
 
 
-def new_AbsIncludeDirsList(absDirsList : Union[Path, List[Path]]) -> IncludeDirsList:
+def new_AbsIncludeDirsList(absDirsList : Path | List[Path]) -> IncludeDirsList:
 
     pathList = PathList()
     pathList.addAbs(absDirsList)
@@ -277,7 +277,7 @@ def new_AbsIncludeDirsList(absDirsList : Union[Path, List[Path]]) -> IncludeDirs
     return IncludeDirsList(pathList)
 
 
-def new_RelIncludeDirsList(relDirsList : Union[str, List[str]],
+def new_RelIncludeDirsList(relDirsList : str | List[str],
                            root : Path = None) -> IncludeDirsList:
 
     if root is None:
@@ -297,7 +297,7 @@ class IncludeDirs(LibInterfacingForm):
 
 class SourcesList(GenericStringList):
     def __init__(self,
-                 sources : Union[List[str], str] = None):
+                 sources : List[str] | str = None):
 
         super().__init__(sources)
 
@@ -308,7 +308,7 @@ class SourcesList(GenericStringList):
 
 class CompilerFlagsList(GenericStringList):
     def __init__(self,
-                 flags : Union[List[str], str] = None):
+                 flags : List[str] | str = None):
 
         super().__init__(flags)
 

@@ -10,7 +10,7 @@ description = "c++ (meta)build system totally based in Python"
 authors = [
   {name = "Ashley Hsu", email = "ajkhsu22@gmail.com"},
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.optional-dependencies]
 dev = [
