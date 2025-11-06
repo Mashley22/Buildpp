@@ -3,71 +3,68 @@ from buildpp.utils import GenericStringList
 import pytest
 
 
-def test_GenericStringList_constructEmpty():
+@pytest.mark.dependency()
+class Test_GenericStringList:
 
-    test = GenericStringList()
-    assert test._list == []
+    def test_constructEmpty(self):
 
+        test = GenericStringList()
+        assert test._list == []
 
-def test_GenericStringList_add_str():
+    def test_add_str(self):
 
-    test = GenericStringList()
+        test = GenericStringList()
 
-    test.add("foo")
+        test.add("foo")
 
-    assert test._list == ["foo"]
+        assert test._list == ["foo"]
 
-    test.add("bar")
+        test.add("bar")
 
-    assert sorted(test._list) == sorted(["foo", "bar"])
+        assert sorted(test._list) == sorted(["foo", "bar"])
 
+    def test_add_list(self):
 
-def test_GenericStringList_add_list():
+        test = GenericStringList()
 
-    test = GenericStringList()
+        testList = ["foo", "bar", "67"]
+        test.add(testList)
 
-    testList = ["foo", "bar", "67"]
-    test.add(testList)
+        assert sorted(test._list) == sorted(testList)
 
-    assert sorted(test._list) == sorted(testList)
+    def test_construct_str(self):
 
+        test = GenericStringList("foo")
 
-def test_GenericStringList_construct_str():
+        assert test._list == ["foo"]
 
-    test = GenericStringList("foo")
+    def test_construct_list(self):
 
-    assert test._list == ["foo"]
+        testList = ["foo", "bar", "i"]
 
+        test = GenericStringList(testList)
 
-def test_GenericStringList_construct_list():
+        assert sorted(test._list) == sorted(testList)
 
-    testList = ["foo", "bar", "i"]
+    def test_constructAndAdd(self):
 
-    test = GenericStringList(testList)
+        test = GenericStringList("foo")
+        test.add(["foo", "test"])
 
-    assert sorted(test._list) == sorted(testList)
+        assert sorted(test._list) == sorted(["foo", "foo", "test"])
 
+    def test_construct_TypeErrAssert(self):
 
-def test_GenericStringList_constructAndAdd():
+        test = GenericStringList("foo")
 
-    test = GenericStringList("foo")
-    test.add(["foo", "test"])
+        with pytest.raises(AssertionError):
+            test.add(67)
 
-    assert sorted(test._list) == sorted(["foo", "foo", "test"])
+        with pytest.raises(AssertionError):
+            test.add(["foo", 76, "ko"])
 
+        with pytest.raises(AssertionError):
+            GenericStringList(4.0)
 
-def test_GenericStringList_construct_TypeErrAssert():
-
-    test = GenericStringList("foo")
-
-    with pytest.raises(AssertionError):
-        test.add(67)
-
-    with pytest.raises(AssertionError):
-        test.add(["foo", 76, "ko"])
-
-    with pytest.raises(AssertionError):
-        GenericStringList(4.0)
-
-    with pytest.raises(AssertionError):
-        GenericStringList(["list", "array", 9])
+        with pytest.raises(AssertionError):
+            GenericStringList(["list", "array", 9])
