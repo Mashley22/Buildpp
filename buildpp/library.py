@@ -143,14 +143,11 @@ class DependenciesList:
         if isinstance(newDependencies, Library):
             self._list.append(newDependencies)
 
-        elif isinstance(newDependencies, abc.Iterable):
-            if all(isinstance(x, Library) for x in newDependencies):
-                self._list.extend(newDependencies)
-            else:
-                assert False, "TypeError"
+        elif isinstance(newDependencies, abc.Iterable) and all(isinstance(x, Library) for x in newDependencies):
+            self._list.extend(newDependencies)
 
         else:
-            self._addOne(newDependencies)
+            assert False, "TypeError"
 
     def deDuplicate(self) -> None:
 
@@ -185,12 +182,9 @@ class PathList:
         if isinstance(relPaths, str):
             self.__addOneRel(relPaths)
 
-        elif isinstance(relPaths, abc.Iterable):
-            if all(isinstance(x, str) for x in relPaths):
-                for path in relPaths:
-                    self.__addOneRel(path)
-            else:
-                assert False, "TypeError"
+        elif isinstance(relPaths, abc.Iterable) and all(isinstance(x, str) for x in relPaths):
+            for path in relPaths:
+                self.__addOneRel(path)
 
         else:
             assert False, "TypeError"
@@ -201,11 +195,8 @@ class PathList:
         if isinstance(absPaths, Path):
             self.__list.append(absPaths)
 
-        elif isinstance(absPaths, abc.Iterable):
-            if all(isinstance(x, Path) for x in absPaths):
-                self.__list.extend(absPaths)
-            else:
-                assert False, "TypeError"
+        elif isinstance(absPaths, abc.Iterable) and all(isinstance(x, Path) for x in absPaths):
+            self.__list.extend(absPaths)
 
         else:
             assert False, "TypeError"
@@ -228,13 +219,8 @@ class PathList:
     def _list(self,
               val : Iterable[Path]) -> None:
 
-        if isinstance(val, abc.Iterable):
-            if all(isinstance(x, Path) for x in val):
-                self.__list = val
-            else:
-                assert False, "TypeError"
-        else:
-            assert False, "TypeError"
+        assert isinstance(val, abc.Iterable) and all(isinstance(x, Path) for x in val), "TypeError"
+        self.__list = val
 
     @property
     def root(self) -> Path:
