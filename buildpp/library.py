@@ -368,17 +368,16 @@ class CompileDefinitions(LibInterfacingForm):
 
 class Library:
 
-    _sources : SourcesList
-    _dependencies : Dependencies
-    _includeDirs : IncludeDirs
-    _compilerFlags : CompilerFlags
-    _compileDefinitions : CompileDefinitions
-    _libType : LibType
-    _root : Path
-    _subDeps : DependenciesList
-    _name : str
-    _dependenciesHandled : bool
-    _version : Version
+    __sources : SourcesList
+    __dependencies : Dependencies
+    __includeDirs : IncludeDirs
+    __compilerFlags : CompilerFlags
+    __compileDefinitions : CompileDefinitions
+    __libType : LibType
+    __root : Path
+    __name : str
+    __dependenciesHandled : bool
+    __version : Version
 
     def __init__(self,
                  name : str,
@@ -387,23 +386,23 @@ class Library:
 
         assert isinstance(libType, LibType)
 
-        self._root = buildListDir
-        self._sources = SourcesList()
-        self._dependencies = Dependencies()
-        self._includeDirs = IncludeDirs()
-        self._compilerFlags = CompilerFlags()
-        self._compileDefinitions = CompileDefinitions()
-        self._libType = libType
-        self._name = name
-        self._dependenciesHandled = False
-        self._version = Version()
+        self.__root = buildListDir
+        self.__sources = SourcesList()
+        self.__dependencies = Dependencies()
+        self.__includeDirs = IncludeDirs()
+        self.__compilerFlags = CompilerFlags()
+        self.__compileDefinitions = CompileDefinitions()
+        self.__libType = libType
+        self.__name = name
+        self.__dependenciesHandled = False
+        self.__version = Version()
 
     '''!
     @brief RELATIVE
     '''
     @property
     def sources(self) -> SourcesList:
-        return self._sources
+        return self.__sources
 
     @sources.setter
     def sources(self,
@@ -412,19 +411,19 @@ class Library:
         if not isinstance(sources, SourcesList):
             raise TypeError
 
-        self._sources = sources
+        self.__sources = sources
 
     @property
     def dependencies(self) -> Dependencies:
-        return self._dependencies
+        return self.__dependencies
 
     @property
     def includeDirs(self) -> IncludeDirs:
-        return self._includeDirs
+        return self.__includeDirs
 
     @property
     def compilerFlags(self) -> CompilerFlags:
-        return self._compilerFlags
+        return self.__compilerFlags
 
     @compilerFlags.setter
     def compilerFlags(self,
@@ -433,11 +432,11 @@ class Library:
         if not isinstance(flags, CompilerFlags):
             raise TypeError
 
-        self._compilerFlags = flags
+        self.__compilerFlags = flags
 
     @property
     def compilerDefs(self) -> CompileDefinitions:
-        return self._compileDefinitions
+        return self.__compileDefinitions
 
     @compilerDefs.setter
     def compilerDefs(self,
@@ -446,15 +445,15 @@ class Library:
         if not isinstance(defs, CompileDefinitions):
             raise TypeError
 
-        self._compilerDefs = defs
+        self.__compilerDefinitions = defs
 
     @property
     def libType(self) -> LibType:
-        return self._libType
+        return self.__libType
 
     @property
     def version(self) -> Version:
-        return self._version
+        return self.__version
 
     @version.setter
     def version(self,
@@ -463,7 +462,7 @@ class Library:
         if not isinstance(val, Version):
             raise TypeError
 
-        self._version = val
+        self.__version = val
 
     def setLibType(self,
                    libType : LibType) -> None:
@@ -471,61 +470,61 @@ class Library:
         if not isinstance(libType):
             raise TypeError
 
-        self._libType = libType
+        self.__libType = libType
 
     def checkSourcesDups(self) -> List[str]:
 
-        sourceDups = findDuplicates(self._sources)
+        sourceDups = findDuplicates(self.__sources)
         if len(sourceDups) > 0:
-            print(f"Warning: duplicate sources, lib: {self._name}, dupicates: {sourceDups}")
+            print(f"Warning: duplicate sources, lib: {self.__name}, dupicates: {sourceDups}")
 
         # findDuplicates should return empty list
         return sourceDups
 
     def checkSourceFilesExist(self) -> List[Path]:
 
-        noExistSources = findNonExistFiles(self._root,
-                                           self._sources)
+        noExistSources = findNonExistFiles(self.__root,
+                                           self.__sources)
 
         if len(noExistSources) > 0:
-            print(f"Warning: source files not found, lib: {self._name}, files: {noExistSources}")
+            print(f"Warning: source files not found, lib: {self.__name}, files: {noExistSources}")
 
         # findNonExistFiles should return []
         return noExistSources
 
     def checkIncludeDupes(self) -> List[str]:
 
-        incDupes = findDuplicates(self._includeDirs.all())
+        incDupes = findDuplicates(self.__includeDirs.all())
 
         if len(incDupes) > 0:
-            print(f"Warning: duplicated include directories lib: {self._name}, include dirs: {incDupes}")
+            print(f"Warning: duplicated include directories lib: {self.__name}, include dirs: {incDupes}")
 
         return incDupes
 
     def checkCompilerFlagDupes(self) -> List[str]:
 
-        compFlagDupes = findDuplicates(self._compilerFlags.all())
+        compFlagDupes = findDuplicates(self.__compilerFlags.all())
 
         if len(compFlagDupes) > 0:
-            print(f"Warning: duplicated compiler flags lib: {self._name}, flags: {compFlagDupes}")
+            print(f"Warning: duplicated compiler flags lib: {self.__name}, flags: {compFlagDupes}")
 
         return compFlagDupes
 
     def checkCompileDefinitionDupes(self) -> List[str]:
 
-        compDefDupes = findDuplicates(self._compileDefinitions.all())
+        compDefDupes = findDuplicates(self.__compileDefinitions.all())
 
         if len(compDefDupes) > 0:
-            print(f"Warning: duplicated compiler definitions lib: {self._name}, flags: {compDefDupes}")
+            print(f"Warning: duplicated compiler definitions lib: {self.__name}, flags: {compDefDupes}")
 
         return compDefDupes
 
     def checkDependencyDupes(self) -> List[str]:
 
-        dupes = findDuplicates(self._dependencies.all())
+        dupes = findDuplicates(self.__dependencies.all())
 
         if len(dupes) > 0:
-            print(f"Warning: duplicated dependencies lib: {self._name}, dependencies: {dupes}")
+            print(f"Warning: duplicated dependencies lib: {self.__name}, dependencies: {dupes}")
 
         return dupes
 
@@ -545,7 +544,7 @@ class Library:
     @property
     def dependenciesHandled(self) -> bool:
 
-        return self._dependenciesHandled
+        return self.__dependenciesHandled
 
     def _getSubDependencies(self) -> List['Library']:
 
@@ -558,36 +557,36 @@ class Library:
 
     def _handlePublicDependencies(self) -> None:
 
-        for dep in self._dependencies.public:
+        for dep in self.__dependencies.public:
 
             if dep.dependenciesHandled is not True:
                 dep.handleDependencies()
 
-            self._includeDirs.inheritPublic(dep.includeDirs)
-            self._compileDefinitions.inheritPublic(dep.compileDefs)
-            self._compilerFlags.inheritPublic(dep.compilerFlags)
+            self.__includeDirs.inheritPublic(dep.includeDirs)
+            self.__compileDefinitions.inheritPublic(dep.compileDefs)
+            self.__compilerFlags.inheritPublic(dep.compilerFlags)
 
     def _handlePrivateDependencies(self) -> None:
 
-        for dep in self._dependencies.private:
+        for dep in self.__dependencies.private:
 
             if dep.dependenciesHandled is not True:
                 dep.handleDependencies()
 
-            self._includeDirs.inheritPrivate(dep.includeDirs)
-            self._compileDefinitions.inheritPrivate(dep.compileDefs)
-            self._compilerFlags.inheritPrivate(dep.compilerFlags)
+            self.__includeDirs.inheritPrivate(dep.includeDirs)
+            self.__compileDefinitions.inheritPrivate(dep.compileDefs)
+            self.__compilerFlags.inheritPrivate(dep.compilerFlags)
 
     def _handleInterfaceDependencies(self) -> None:
 
-        for dep in self._dependencies.private:
+        for dep in self.__dependencies.private:
 
             if dep.dependenciesHandled is not True:
                 dep.handleDependencies()
 
-            self._includeDirs.inheritInterface(dep.includeDirs)
-            self._compileDefinitions.inheritInterface(dep.compileDefs)
-            self._compilerFlags.inheritInterface(dep.compilerFlags)
+            self.__includeDirs.inheritInterface(dep.includeDirs)
+            self.__compileDefinitions.inheritInterface(dep.compileDefs)
+            self.__compilerFlags.inheritInterface(dep.compilerFlags)
 
     def handleDependencies(self) -> None:
 
@@ -595,7 +594,7 @@ class Library:
         self._handlePublicDependencies()
         self._handlePrivateDependencies()
 
-        self._dependenciesHandled = True
+        self.__dependenciesHandled = True
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]
