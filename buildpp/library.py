@@ -2,6 +2,7 @@ from typing import List, Union, Type, TypeVar, Iterable
 from enum import Enum
 from pathlib import Path
 import collections.abc as abc
+import inspect
 
 from buildpp.utils import findDuplicates, findNonExistFiles, deDuplicateList, GenericStringList
 from buildpp.versions import Version
@@ -280,7 +281,7 @@ def new_RelIncludeDirsList(relDirsList : Union[str, List[str]],
                            root : Path = None) -> IncludeDirsList:
 
     if root is None:
-        root = Path(__file__).parent
+        root = Path(inspect.stack()[1].filename).resolve().parent
 
     pathList = PathList(root)
     pathList.addRel(relDirsList)
