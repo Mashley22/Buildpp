@@ -5,11 +5,10 @@ import importlib
 from buildpp.library import Library, LibType
 
 
-def new_library(name : str,
+def new_Library(name : str,
                 libType : LibType = LibType.STATIC) -> Library:
 
-    if not isinstance(name, str):
-        raise TypeError
+    assert isinstance(name, str) and isinstance(libType, LibType), "TypeError"
 
     return Library(name,
                    Path(inspect.stack()[1].filename).resolve().parent,

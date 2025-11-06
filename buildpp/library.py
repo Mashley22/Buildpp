@@ -384,8 +384,6 @@ class Library:
                  buildListDir : Path,
                  libType : LibType = LibType.STATIC):
 
-        assert isinstance(libType, LibType)
-
         self.__root = buildListDir
         self.__sources = SourcesList()
         self.__dependencies = Dependencies()
