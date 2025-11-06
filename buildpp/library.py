@@ -406,8 +406,7 @@ class Library:
     def sources(self,
                 sources : SourcesList) -> None:
 
-        if not isinstance(sources, SourcesList):
-            raise TypeError
+        assert isinstance(sources, SourcesList), "TypeError"
 
         self.__sources = sources
 
@@ -457,16 +456,14 @@ class Library:
     def version(self,
                 val : Version) -> None:
 
-        if not isinstance(val, Version):
-            raise TypeError
+        assert isinstance(val, Version), "TypeError"
 
         self.__version = val
 
     def setLibType(self,
                    libType : LibType) -> None:
 
-        if not isinstance(libType):
-            raise TypeError
+        assert isinstance(libType, LibType), "TypeError"
 
         self.__libType = libType
 
@@ -593,6 +590,11 @@ class Library:
         self._handlePrivateDependencies()
 
         self.__dependenciesHandled = True
+
+    @property
+    def name(self) -> str:
+
+        return self.__name
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]
