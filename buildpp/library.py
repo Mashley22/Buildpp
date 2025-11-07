@@ -1,4 +1,4 @@
-from typing import List, Type, TypeVar, Iterable
+from typing import List, Type, TypeVar, Iterable, Set
 from enum import Enum
 from pathlib import Path
 import collections.abc as abc
@@ -654,6 +654,10 @@ class Library:
     def name(self) -> str:
 
         return self.__name
+
+    def allSources(self) -> List[Path]:
+
+        return list(set([self.__root / ele for ele in self.__sources.sources]))
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]
