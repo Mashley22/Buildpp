@@ -110,4 +110,4 @@ class Test_Library:
             
             for ele in errVals:
                 with pytest.raises(AssertionError):
-                    test.compilerDefs = ele
+                    test.compileDefs = ele
