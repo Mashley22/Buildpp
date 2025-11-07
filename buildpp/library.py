@@ -190,17 +190,62 @@ class DependenciesList:
 
         self.__list = val
 
+    def __eq__(self,
+               other : "DependenciesList") -> bool:
+
+        return sorted(self.__list) == sorted(other.__list)
+
 
 class Dependencies(LibInterfacingForm):
+    __linkOnly : DependenciesList
+
     def __init__(self,
                  public : DependenciesList = None,
                  private : DependenciesList = None,
                  interface : DependenciesList = None):
-
+        
+        self.__linkOnly = DependenciesList()
         super().__init__(DependenciesList,
                          public,
                          private,
                          interface)
+
+    def all(self) -> List['Library']:
+
+        retVal = []
+        retVal.extend(super().public.libs)
+        retVal.extend(super().private.libs)
+        retVal.extend(super().interface.libs)
+        retVal.extend(self.__linkOnly.libs)
+
+    def __inheritLinkOnly(self,
+                          other : "Dependencies") -> None:
+
+        self.__linkOnly.add(other.private.libs)
+        self.__linkOnly.add(other.__linkOnly.libs)
+
+    def inheritPublic(self,
+                      other : "Dependencies") -> None:
+
+        super().inheritPublic(other)
+        self.__inheritLinkOnly(other)
+
+    def inheritPrivate(self,
+                       other : "Dependencies") -> None:
+
+        super().inheritPrivate(other)
+        self.__inheritLinkOnly(other)
+
+    def inheritInterface(self,
+                         other : "Dependencies") -> None:
+
+        super().inheritInterface(other)
+        self.__inheritLinkOnly(other)
+
+    @property
+    def linkOnly(self) -> DependenciesList:
+
+        return self.__linkOnly
 
 
 class PathList:
@@ -386,16 +431,18 @@ class CompileDefinitions(LibInterfacingForm):
 
 class Library:
 
-    __sources : SourcesList
-    __dependencies : Dependencies
-    __includeDirs : IncludeDirs
-    __compilerFlags : CompilerFlags
-    __compileDefinitions : CompileDefinitions
     __libType : LibType
     __root : Path
     __name : str
-    __dependenciesHandled : bool
     __version : Version
+
+    __sources : SourcesList
+    __includeDirs : IncludeDirs
+    __compilerFlags : CompilerFlags
+    __compileDefinitions : CompileDefinitions
+
+    __dependencies : Dependencies
+    __dependenciesHandled : bool
 
     def __init__(self,
                  name : str,
@@ -403,15 +450,17 @@ class Library:
                  libType : LibType = LibType.STATIC):
 
         self.__root = buildListDir
+        self.__libType = libType
+        self.__name = name
+        self.__version = Version()
+
         self.__sources = SourcesList()
-        self.__dependencies = Dependencies()
         self.__includeDirs = IncludeDirs()
         self.__compilerFlags = CompilerFlags()
         self.__compileDefinitions = CompileDefinitions()
-        self.__libType = libType
-        self.__name = name
+
+        self.__dependencies = Dependencies()
         self.__dependenciesHandled = False
-        self.__version = Version()
 
     '''!
     @brief RELATIVE
@@ -449,12 +498,12 @@ class Library:
         self.__compilerFlags = flags
 
     @property
-    def compilerDefs(self) -> CompileDefinitions:
+    def compileDefs(self) -> CompileDefinitions:
         return self.__compileDefinitions
 
-    @compilerDefs.setter
-    def compilerDefs(self,
-                     defs : CompileDefinitions):
+    @compileDefs.setter
+    def compileDefs(self,
+                    defs : CompileDefinitions):
 
         assert isinstance(defs, CompileDefinitions), "TypeError"
 
@@ -557,18 +606,9 @@ class Library:
 
         return self.__dependenciesHandled
 
-    def _getSubDependencies(self) -> List['Library']:
-
-        subDeps = []
-
-        for dep in self.dependencies:
-            subDeps.extend(dep._getSubDependencies())
-
-        deDuplicateList(subDeps)
-
     def _handlePublicDependencies(self) -> None:
 
-        for dep in self.__dependencies.public:
+        for dep in self.__dependencies.public.libs:
 
             if dep.dependenciesHandled is not True:
                 dep.handleDependencies()
@@ -576,10 +616,11 @@ class Library:
             self.__includeDirs.inheritPublic(dep.includeDirs)
             self.__compileDefinitions.inheritPublic(dep.compileDefs)
             self.__compilerFlags.inheritPublic(dep.compilerFlags)
+            self.__dependencies.inheritPublic(dep.dependencies)
 
     def _handlePrivateDependencies(self) -> None:
 
-        for dep in self.__dependencies.private:
+        for dep in self.__dependencies.private.libs:
 
             if dep.dependenciesHandled is not True:
                 dep.handleDependencies()
@@ -587,10 +628,11 @@ class Library:
             self.__includeDirs.inheritPrivate(dep.includeDirs)
             self.__compileDefinitions.inheritPrivate(dep.compileDefs)
             self.__compilerFlags.inheritPrivate(dep.compilerFlags)
-
+            self.__dependencies.inheritPrivate(dep.dependencies)
+            
     def _handleInterfaceDependencies(self) -> None:
 
-        for dep in self.__dependencies.private:
+        for dep in self.__dependencies.interface.libs:
 
             if dep.dependenciesHandled is not True:
                 dep.handleDependencies()
@@ -598,6 +640,7 @@ class Library:
             self.__includeDirs.inheritInterface(dep.includeDirs)
             self.__compileDefinitions.inheritInterface(dep.compileDefs)
             self.__compilerFlags.inheritInterface(dep.compilerFlags)
+            self.__dependencies.inheritInterface(dep.dendencies)
 
     def handleDependencies(self) -> None:
 
