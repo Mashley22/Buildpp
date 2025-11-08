@@ -2,6 +2,8 @@ from buildpp import LibInterfacingForm
 
 import pytest
 
+from typing import List
+
 
 class ListCover:
     _list : list
@@ -18,6 +20,11 @@ class ListCover:
     def deDuplicate(self) -> None:
 
         self._list = list(set(self._list))
+
+    def add(self,
+            vals : List[str]) -> None:
+
+        self._list.extend(vals)
 
 
 class ListCover2:

@@ -111,8 +111,8 @@ class LibInterfacingForm:
 
         self._inheritTypeCheck(other)
 
-        self.__public._list.extend(other.__public._list)
-        self.__public._list.extend(other.__interface._list)
+        self.__public.add(other.__public._list)
+        self.__public.add(other.__interface._list)
 
         self.__public.deDuplicate()
 
@@ -121,8 +121,8 @@ class LibInterfacingForm:
 
         self._inheritTypeCheck(other)
 
-        self.__private._list.extend(other.__public._list)
-        self.__private._list.extend(other.__interface._list)
+        self.__private.add(other.__public._list)
+        self.__private.add(other.__interface._list)
 
         self.__private.deDuplicate()
 
@@ -131,8 +131,8 @@ class LibInterfacingForm:
 
         self._inheritTypeCheck(other)
 
-        self.__interface._list.extend(other.__public._list)
-        self.__interface._list.extend(other.__interface._list)
+        self.__interface.add(other.__public._list)
+        self.__interface.add(other.__interface._list)
 
         self.__interface.deDuplicate()
 
@@ -349,6 +349,18 @@ class IncludeDirsList(PathList):
     def dirs(self) -> List[Path]:
         return self._list
 
+    def add(self,
+            vals : Path | List[Path]) -> None:
+
+        if isinstance(vals, Path):
+            self._list.append(vals)
+
+        elif isinstance(vals, list) and all(isinstance(x, Path) for x in vals):
+            self._list.extend(vals)
+
+        else:
+            assert False, "TypeError"
+
 
 def new_AbsIncludeDirsList(absDirsList : Path | List[Path]) -> IncludeDirsList:
 
@@ -412,6 +424,7 @@ class CompilerFlags(LibInterfacingForm):
 class CompileDefinitionsList(GenericStringList):
     def __init__(self,
                  defs : List[str] = None):
+
         super().__init__(defs)
 
     @property
