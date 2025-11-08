@@ -1,4 +1,4 @@
-from typing import List, Type, TypeVar, Iterable
+from typing import TypeAlias, List, Type, TypeVar, Iterable, Dict, Optional
 from enum import Enum
 from pathlib import Path
 import collections.abc as abc
@@ -30,7 +30,7 @@ class LibInterfacingForm:
     __private : T
     __public : T
     __interface : T
-    __underlying_t : type
+    __underlying_t : TypeAlias
 
     '''!
     @tparam cls the underling type for each access member
@@ -99,10 +99,10 @@ class LibInterfacingForm:
 
     def all(self):
 
-        retval = []
-        retval.extend(self.__public._list)
-        retval.extend(self.__private._list)
-        retval.extend(self.__interface._list)
+        retval = self.__underlying_t()
+        retval.merge(self.__public)
+        retval.merge(self.__private)
+        retval.merge(self.__interface)
 
         return retval
 
@@ -111,8 +111,8 @@ class LibInterfacingForm:
 
         self._inheritTypeCheck(other)
 
-        self.__public.add(other.__public._list)
-        self.__public.add(other.__interface._list)
+        self.__public.merge(other.__public)
+        self.__public.merge(other.__interface)
 
         self.__public.deDuplicate()
 
@@ -121,8 +121,8 @@ class LibInterfacingForm:
 
         self._inheritTypeCheck(other)
 
-        self.__private.add(other.__public._list)
-        self.__private.add(other.__interface._list)
+        self.__private.merge(other.__public)
+        self.__private.merge(other.__interface)
 
         self.__private.deDuplicate()
 
@@ -131,8 +131,8 @@ class LibInterfacingForm:
 
         self._inheritTypeCheck(other)
 
-        self.__interface.add(other.__public._list)
-        self.__interface.add(other.__interface._list)
+        self.__interface.merge(other.__public)
+        self.__interface.merge(other.__interface)
 
         self.__interface.deDuplicate()
 
@@ -158,37 +158,27 @@ class DependenciesList:
         return self.__list
 
     def add(self,
-            newDependencies : Iterable['Library'] | 'Library') -> None:
+            vals : Iterable['Library'] | 'Library') -> None:
+        
+        if isinstance(vals, Library):
+            self.__list.append(vals)
 
-        if isinstance(newDependencies, Library):
-            self.__list.append(newDependencies)
-
-        elif isinstance(newDependencies, abc.Iterable) and all(isinstance(x, Library) for x in newDependencies):
-            self.__list.extend(newDependencies)
+        elif isinstance(vals, abc.Iterable) and all(isinstance(x, Library) for x in vals):
+            self.__list.extend(vals)
 
         else:
             assert False, "TypeError"
 
+    def merge(self,
+              other : 'DependenciesList') -> None:
+
+        assert isinstance(other, DependenciesList), "TypeError"
+
+        self.__list.extend(other.__list)
+
     def deDuplicate(self) -> None:
 
         deDuplicateList(self.__list)
-
-    '''!
-    @friend LibInterfaceForm
-    '''
-    @property
-    def _list(self) -> List['Library']:
-
-        return self.__list
-
-    '''!
-    @friend LibInterfaceForm
-    '''
-    @_list.setter
-    def _list(self,
-              val : List['Library']) -> None:
-
-        self.__list = val
 
     def __eq__(self,
                other : "DependenciesList") -> bool:
@@ -299,24 +289,6 @@ class PathList:
 
         return self.__list
 
-    '''!
-    @friend LibInterfaceForm
-    '''
-    @property
-    def _list(self) -> List[Path]:
-
-        return self.__list
-
-    '''!
-    @friend LibInterfaceForm
-    '''
-    @_list.setter
-    def _list(self,
-              val : Iterable[Path]) -> None:
-
-        assert isinstance(val, abc.Iterable) and all(isinstance(x, Path) for x in val), "TypeError"
-        self.__list = val
-
     @property
     def root(self) -> Path:
 
@@ -330,6 +302,13 @@ class PathList:
 
         self.__root = root
 
+    def merge(self,
+              other : "PathList") -> None:
+
+        assert isinstance(other, PathList), "TypeError"
+
+        self.__list.extend(other.__list)
+
 
 class IncludeDirsList(PathList):
     def __init__(self,
@@ -342,24 +321,19 @@ class IncludeDirsList(PathList):
             if pathList.root is not None:
                 self.root = Path(pathList.root)
 
-            if pathList._list is not None:
-                self._list = list(pathList._list)
+            if pathList.paths is not None:
+                self.paths.extend(pathList.paths)
 
     @property
     def dirs(self) -> List[Path]:
-        return self._list
+        return self.paths
 
-    def add(self,
-            vals : Path | List[Path]) -> None:
+    def merge(self,
+              other : 'IncludeDirsList') -> None:
+        
+        assert isinstance(other, IncludeDirsList), "TypeError"
 
-        if isinstance(vals, Path):
-            self._list.append(vals)
-
-        elif isinstance(vals, list) and all(isinstance(x, Path) for x in vals):
-            self._list.extend(vals)
-
-        else:
-            assert False, "TypeError"
+        self.paths.extend(other.paths)
 
 
 def new_AbsIncludeDirsList(absDirsList : Path | List[Path]) -> IncludeDirsList:
@@ -402,7 +376,7 @@ class SourcesList(GenericStringList):
 
     @property
     def sources(self) -> List[str]:
-        return super()._list
+        return super().list
 
 
 class CompilerFlagsList(GenericStringList):
@@ -413,7 +387,7 @@ class CompilerFlagsList(GenericStringList):
 
     @property
     def flags(self) -> List[str]:
-        return super()._list
+        return super().list
 
 
 class CompilerFlags(LibInterfacingForm):
@@ -421,15 +395,29 @@ class CompilerFlags(LibInterfacingForm):
         super().__init__(CompilerFlagsList)
 
 
-class CompileDefinitionsList(GenericStringList):
-    def __init__(self,
-                 defs : List[str] = None):
+DefinitionValues_t : TypeAlias = Optional[str | int | bool | float]
 
-        super().__init__(defs)
+
+class CompileDefinitionsList():
+    __list : Dict[str, DefinitionValues_t]
+
+    def __init__(self):
+
+        self.__list : Dict[str, DefinitionValues_t] = {}
 
     @property
     def defs(self) -> List[str]:
-        return super()._list
+        return super().__list
+
+    def merge(self,
+              other : "CompileDefinitionsList") -> None:
+
+        assert isinstance(other, CompileDefinitionsList), "TypeError"
+
+        self.__list.update(other.__list)
+
+    def deDuplicate(self) -> None:
+        return
 
 
 class CompileDefinitions(LibInterfacingForm):

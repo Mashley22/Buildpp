@@ -107,15 +107,3 @@ def test_PathList_addRel_TypeError():
 
     with pytest.raises(AssertionError):
         test.addRel(["foo", Path(), "foo"])
-
-
-# ____________________._LIST_ATTRIBUTE____________________
-def test_PathList_list_attribute():
-
-    test = PathList()
-
-    assert test.paths == test._list and test.paths == []
-
-    test.addAbs(absPaths)
-
-    assert test.paths == test._list and sorted(test.paths) == sorted(absPaths)

@@ -9,8 +9,8 @@ class ListCover:
     _list : list
 
     def __init__(self,
-                 vals : list = []):
-        self._list = vals
+                 vals : list = None):
+        self._list = vals if vals is not None else []
 
     def __eq__(self,
                other : 'ListCover') -> bool:
@@ -21,10 +21,12 @@ class ListCover:
 
         self._list = list(set(self._list))
 
-    def add(self,
-            vals : List[str]) -> None:
+    def merge(self,
+              other : "ListCover") -> None:
 
-        self._list.extend(vals)
+        assert isinstance(other, ListCover), "TypeError"
+
+        self._list.extend(other._list)
 
 
 class ListCover2:
@@ -127,7 +129,7 @@ class Test_LibInterfacingForm:
         test.private = ListCover([6, 7])
         test.interface = ListCover([6, 9])
 
-        assert sorted(test.all()) == sorted([1, 2, 3, 4, 6, 7, 6, 9])
+        assert sorted(test.all()._list) == sorted([1, 2, 3, 4, 6, 7, 6, 9])
 
     def test_inheritTypeAssert(self):
 

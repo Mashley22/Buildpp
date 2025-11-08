@@ -73,25 +73,18 @@ class GenericStringList:
         else:
             assert False, "TypeError"
 
+    def merge(self,
+              other : "GenericStringList") -> None:
+
+        assert isinstance(other, GenericStringList), "TypeError"
+
+        self.__list.extend(other.__list)
+
     def deDuplicate(self) -> None:
 
         deDuplicateList(self.__list)
 
-    '''!
-    @friend LibInterfaceForm
-    '''
-    @property
-    def _list(self) -> List[str]:
+    @property 
+    def list(self) -> List[str]:
 
         return self.__list
-
-    '''!
-    @friend LibInterfaceForm
-    '''
-    @_list.setter
-    def _list(self,
-              val : List[str]):
-
-        assert isinstance(val, list) and all(isinstance(x, str) for x in val), "TypeError"
-
-        self.__list = val
