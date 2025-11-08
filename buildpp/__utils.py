@@ -88,3 +88,10 @@ class GenericStringList:
     def list(self) -> List[str]:
 
         return self.__list
+
+    def __eq__(self,
+               other : "GenericStringList") -> bool:
+
+        assert isinstance(other, GenericStringList), "TypeError"
+
+        return sorted(self.__list) == sorted(other.__list)

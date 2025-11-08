@@ -68,3 +68,54 @@ class Test_GenericStringList:
 
         with pytest.raises(AssertionError):
             GenericStringList(["list", "array", 9])
+
+    def test_eq(self):
+
+        test = GenericStringList()
+
+        assert test == GenericStringList()
+        
+        testList = ["foo", "bar", "String", "list"]
+
+        test.add(testList)
+
+        assert test == GenericStringList(testList)
+
+    def test_eq_diffOrder(self):
+    
+        GenericStringList(["foo", "bar"]) == GenericStringList(["bar", "foo"])
+
+    def test_eq_TypeError(self):
+
+        with pytest.raises(AssertionError):
+            GenericStringList() == 5
+
+        with pytest.raises(AssertionError):
+            GenericStringList() == ["list"]
+
+    def test_merge(self):
+        
+        list_1 = ["foo", "bar"]
+        list_2 = ["test", "list"]
+        list_total = list_1[:]
+        list_total.extend(list_2)
+
+        test = GenericStringList(list_1)
+        toMerge = GenericStringList(list_2)
+
+        test.merge(toMerge)
+
+        assert test == GenericStringList(list_total)
+    
+    def test_merge_TypeError(self):
+
+        test = GenericStringList()
+
+        with pytest.raises(AssertionError):
+            test.merge(5)
+
+        with pytest.raises(AssertionError):
+            test.merge('5')
+
+        with pytest.raises(AssertionError):
+            test.merge([])
