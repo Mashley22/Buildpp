@@ -1,8 +1,9 @@
-from typing import TypeAlias, List, Type, TypeVar, Iterable, Dict, Optional
+from typing import TypeAlias, List, Type, TypeVar, Iterable, Dict
 from enum import Enum
 from pathlib import Path
 import collections.abc as abc
 import inspect
+import copy
 
 from .__utils import findDuplicates, findNonExistFiles, deDuplicateList, GenericStringList
 from buildpp import Version
@@ -395,29 +396,64 @@ class CompilerFlags(LibInterfacingForm):
         super().__init__(CompilerFlagsList)
 
 
-DefinitionValues_t : TypeAlias = Optional[str | int | bool | float]
-
-
 class CompileDefinitionsList():
-    __list : Dict[str, DefinitionValues_t]
+    definitionValues_t : TypeAlias = str | int | bool | float | None
+    allowedValue_t_tuple = (str, int, bool, float, type(None))
+    __dict : Dict[str, definitionValues_t]
 
-    def __init__(self):
+    def __init__(self,
+                 vals : Dict[str, "CompileDefinitionsList.definitionValues_t"] = None):
+        
+        if vals is None:
+            self.__dict : Dict[str, CompileDefinitionsList.definitionValues_t] = {}
 
-        self.__list : Dict[str, DefinitionValues_t] = {}
+        else:
+            assert (
+                isinstance(vals, dict)
+                and all(isinstance(x, str) for x in vals.keys())
+                and all(isinstance(x, CompileDefinitionsList.allowedValue_t_tuple) for x in vals.values())
+            ), "TypeError"
 
+            self.__dict = vals
+        
     @property
     def defs(self) -> List[str]:
-        return super().__list
+        return super().__dict
 
     def merge(self,
               other : "CompileDefinitionsList") -> None:
 
         assert isinstance(other, CompileDefinitionsList), "TypeError"
 
-        self.__list.update(other.__list)
+        self.__dict.update(other.__dict)
 
     def deDuplicate(self) -> None:
         return
+
+    def add(self,
+            key : str,
+            value : 'CompileDefinitionsList.definitionValues_t' = None) -> None:
+        
+        assert isinstance(key, str) and isinstance(value, CompileDefinitionsList.allowedValue_t_tuple), "TypeError"
+        self.__dict[key] = value
+
+    def update(self,
+               vals : Dict[str, 'CompileDefinitionsList.definitionValues_t']) -> None:
+        
+        assert (
+            isinstance(vals, dict)
+            and all(isinstance(x, str) for x in vals.keys())
+            and all(isinstance(x, CompileDefinitionsList.allowedValue_t_tuple) for x in vals.values())
+        ), "TypeError"
+
+        self.__dict.update(vals)
+
+    def __contains__(self,
+                     val : str) -> bool:
+
+        assert isinstance(val, str), "TypeError"
+
+        return val in self.__dict
 
 
 class CompileDefinitions(LibInterfacingForm):
