@@ -1,11 +1,11 @@
-from typing import List, Type, TypeVar, Iterable, Set
+from typing import List, Type, TypeVar, Iterable
 from enum import Enum
 from pathlib import Path
 import collections.abc as abc
 import inspect
 
-from buildpp.utils import findDuplicates, findNonExistFiles, deDuplicateList, GenericStringList
-from buildpp.versions import Version
+from .__utils import findDuplicates, findNonExistFiles, deDuplicateList, GenericStringList
+from buildpp import Version
 
 
 '''

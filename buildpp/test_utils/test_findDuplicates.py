@@ -1,4 +1,4 @@
-from buildpp.utils import findDuplicates
+from buildpp.__utils import findDuplicates
 from .utils import multiCopyRange
 
 import pytest

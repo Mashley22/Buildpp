@@ -1,4 +1,4 @@
-from buildpp.library import SourcesList
+from buildpp import SourcesList
 
 
 def test_SourcesList_construct_empty():

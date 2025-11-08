@@ -1,5 +1,4 @@
-from buildpp.library import LibInterfacingForm
-from buildpp.utils import deDuplicateList
+from buildpp import LibInterfacingForm
 
 import pytest
 
@@ -18,7 +17,7 @@ class ListCover:
 
     def deDuplicate(self) -> None:
 
-        self._list = deDuplicateList(self._list)
+        self._list = list(set(self._list))
 
 
 class ListCover2:
@@ -92,7 +91,7 @@ class Test_LibInterfacingForm:
         parent.interface = ListCover([6, 7, 9])
         parent.private = ListCover([10, 11, 12])
 
-        child.inheritPublic(parent)
+        child.inheritPrivate(parent)
 
         assert child.private == ListCover([1, 5, 8, 6, 7, 9])
         assert child.public == ListCover()
@@ -107,7 +106,7 @@ class Test_LibInterfacingForm:
         parent.interface = ListCover([6, 7, 9])
         parent.private = ListCover([10, 11, 12])
 
-        child.inheritPublic(parent)
+        child.inheritInterface(parent)
 
         assert child.interface == ListCover([1, 5, 8, 6, 7, 9])
         assert child.private == ListCover()

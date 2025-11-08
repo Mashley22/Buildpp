@@ -1,4 +1,4 @@
-from buildpp.versions import Version
+from buildpp import Version
 import pytest
 
 

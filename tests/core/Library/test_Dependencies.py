@@ -1,4 +1,4 @@
-from buildpp.buildpp import new_Library
+from buildpp import new_Library
 
 MAX_DEPTH = 10
 

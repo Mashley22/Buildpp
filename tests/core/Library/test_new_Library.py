@@ -1,5 +1,5 @@
-from buildpp.buildpp import new_Library
-from buildpp.library import LibType
+from buildpp import new_Library
+from buildpp import LibType
 
 import pytest
 

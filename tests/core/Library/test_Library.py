@@ -1,5 +1,5 @@
-from buildpp.buildpp import new_Library
-from buildpp.library import (
+from buildpp import (
+    new_Library,
     SourcesList,
     IncludeDirsList,
     CompileDefinitionsList,

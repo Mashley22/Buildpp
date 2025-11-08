@@ -1,4 +1,4 @@
-from buildpp.library import PathList
+from buildpp import PathList
 
 import pytest
 from pathlib import Path

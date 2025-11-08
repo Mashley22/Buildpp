@@ -1,4 +1,4 @@
-from buildpp.utils import GenericStringList
+from buildpp.__utils import GenericStringList
 
 import pytest
 

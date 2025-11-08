@@ -1,4 +1,4 @@
-from buildpp.library import PathList, IncludeDirsList, new_AbsIncludeDirsList, new_RelIncludeDirsList
+from buildpp import PathList, IncludeDirsList, new_AbsIncludeDirsList, new_RelIncludeDirsList
 
 from test_PathList import absPaths, relPaths
 

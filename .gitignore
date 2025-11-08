@@ -1,2 +1,4 @@
 **/__pycache__
 buildpp.egg-info
+package-lock.json
+package.json

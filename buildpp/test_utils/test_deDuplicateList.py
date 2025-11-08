@@ -1,4 +1,4 @@
-from buildpp.utils import deDuplicateList
+from buildpp.__utils import deDuplicateList
 
 import pytest
 

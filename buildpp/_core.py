@@ -2,7 +2,7 @@ from pathlib import Path
 import inspect
 import importlib
 
-from buildpp.library import Library, LibType
+from buildpp import Library, LibType
 
 
 def new_Library(name : str,
