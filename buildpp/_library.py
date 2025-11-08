@@ -45,11 +45,11 @@ class LibInterfacingForm:
 
         self.__underlying_t = cls
 
-        self.public = public if public is not None else cls()
+        self.public = copy.deepcopy(public) if public is not None else cls()
 
-        self.private = private if private is not None else cls()
+        self.private = copy.deepcopy(private) if private is not None else cls()
 
-        self.interface = interface if interface is not None else cls()
+        self.interface = copy.deepcopy(interface) if interface is not None else cls()
 
     def _setterTypeCheck(self,
                          accessLvl : str,
@@ -414,7 +414,7 @@ class CompileDefinitionsList():
                 and all(isinstance(x, CompileDefinitionsList.allowedValue_t_tuple) for x in vals.values())
             ), "TypeError"
 
-            self.__dict = vals
+            self.__dict = copy.deepcopy(vals)
         
     @property
     def defs(self) -> List[str]:
