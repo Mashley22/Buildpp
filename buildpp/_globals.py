@@ -1,14 +1,21 @@
 from buildpp import CompileDefinitionsList
 
-_globalDefs = CompileDefinitionsList
+from Typing import Dict
+
+__globalDefs = CompileDefinitionsList
 
 
 def get_GlobalCompileDefs() -> CompileDefinitionsList:
 
-    return _globalDefs
+    return __globalDefs.symbols
 
 
 def add_GlobalCompileDef(symbol : str,
                          value : CompileDefinitionsList.definitionValues_t = None) -> None:
 
-    _globalDefs.add(symbol, value)
+    __globalDefs.add(symbol, value)
+
+
+def update_GlobalCompileDef(vals : Dict[str, CompileDefinitionsList.definitionValues_t]) -> None:
+
+    __globalDefs.update(vals)
