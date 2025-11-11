@@ -429,7 +429,7 @@ class CompileDefinitionsList():
         
     @property
     def symbols(self) -> List[str]:
-        return super().__dict
+        return self.__dict
 
     def merge(self,
               other : "CompileDefinitionsList") -> None:
@@ -464,7 +464,7 @@ class CompileDefinitionsList():
 
         assert isinstance(val, str), "TypeError"
 
-        return val in self.__dict
+        return val in self.__dict.keys()
 
 
 class CompileDefinitions(LibInterfacingForm):
