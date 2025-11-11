@@ -16,3 +16,6 @@ requires-python = ">=3.10"
 dev = [
   "pytest",
 ]
+cpp = [
+  "ninja-syntax",
+]
