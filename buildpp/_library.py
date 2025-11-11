@@ -396,6 +396,7 @@ class CompilerFlags(LibInterfacingForm):
         super().__init__(CompilerFlagsList)
 
 
+# None value means that the symbol is defined
 class CompileDefinitionsList():
     definitionValues_t : TypeAlias = str | int | bool | float | None
     allowedValue_t_tuple = (str, int, bool, float, type(None))
@@ -417,7 +418,7 @@ class CompileDefinitionsList():
             self.__dict = copy.deepcopy(vals)
         
     @property
-    def defs(self) -> List[str]:
+    def symbols(self) -> List[str]:
         return super().__dict
 
     def merge(self,
