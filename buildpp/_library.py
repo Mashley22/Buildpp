@@ -310,6 +310,11 @@ class PathList:
 
         self.__list.extend(other.__list)
 
+    def __contains__(self,
+                     path : Path) -> bool:
+
+        return path in self.__list
+
 
 class IncludeDirsList(PathList):
     def __init__(self,

@@ -107,3 +107,15 @@ def test_PathList_addRel_TypeError():
 
     with pytest.raises(AssertionError):
         test.addRel(["foo", Path(), "foo"])
+
+
+# ____________________MISC____________________
+def test_PathList_contains():
+
+    test = PathList()
+
+    assert (Path(__file__) in test) is False
+
+    test.addAbs(Path(__file__))
+
+    assert (Path(__file__) in test) is True
