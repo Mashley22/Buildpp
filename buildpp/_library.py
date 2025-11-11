@@ -186,6 +186,11 @@ class DependenciesList:
 
         return sorted(self.__list) == sorted(other.__list)
 
+    def __contains__(self,
+                     val : 'Library') -> bool:
+
+        return val in self.__list
+
 
 class Dependencies(LibInterfacingForm):
     __linkOnly : DependenciesList
