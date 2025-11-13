@@ -17,7 +17,8 @@ its dependencies or the dependencies inherited from the dependencies
 
 class LibType(Enum):
     STATIC = 0
-    SHARED = 0
+    SHARED = 1
+    EXECUTABLE = 2
 
 
 """!
