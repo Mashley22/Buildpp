@@ -19,3 +19,5 @@ def add_GlobalCompileDef(symbol : str,
 def update_GlobalCompileDef(vals : Dict[str, CompileDefinitionsList.definitionValues_t]) -> None:
 
     __globalDefs.update(vals)
+
+__all__ = [name for name in dir() if not name.startswith('_')]
