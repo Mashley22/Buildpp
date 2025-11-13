@@ -4,8 +4,7 @@ from buildpp.langs.utils import _find_in_path
 _COMPILER_COMMAND_OPTIONS = (
     "c++",
     "clang++",
-    "g++",
-    "cl"
+    "g++"
 )
 
 __COMPILER_COMMAND = "c++"
