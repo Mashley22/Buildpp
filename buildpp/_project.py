@@ -30,8 +30,7 @@ class Project:
     def __init__(self,
                  name : str):
         
-        if name is not __PROJECT_CONSTRUCTOR_PROC_VAR:
-            print("Error, do not call the constructor of Project, use the add_project function instead please")
+        assert name == __PROJECT_CONSTRUCTOR_PROC_VAR, "Error, do not call the constructor of Project, use the add_project function instead please"
 
         self.__compileDefs = CompileDefinitionsList()
         self.__compilerFlags = CompilerFlagsList()
