@@ -6,7 +6,7 @@ import inspect
 import copy
 
 from .__utils import findDuplicates, findNonExistFiles, deDuplicateList, GenericStringList
-from buildpp import Version
+from buildpp import Version, Langs
 
 
 '''
@@ -489,6 +489,7 @@ class Library:
     __includeDirs : IncludeDirs
     __compilerFlags : CompilerFlags
     __compileDefinitions : CompileDefinitions
+    __lang : Langs
 
     __dependencies : Dependencies
     __dependenciesHandled : bool
@@ -502,6 +503,7 @@ class Library:
         self.__libType = libType
         self.__name = name
         self.__version = Version()
+        self.__lang = None
 
         self.__sources = SourcesList()
         self.__includeDirs = IncludeDirs()
@@ -525,6 +527,18 @@ class Library:
         assert isinstance(sources, SourcesList), "TypeError"
 
         self.__sources = sources
+
+    @property 
+    def lang(self) -> Langs:
+        return self.__lang
+
+    @lang.setter
+    def lang(self,
+             val : Langs) -> None:
+
+        assert isinstance(val, Langs), "TypeError"
+
+        self.__lang = val
 
     @property
     def dependencies(self) -> Dependencies:
