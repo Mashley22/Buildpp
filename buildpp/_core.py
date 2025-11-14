@@ -3,6 +3,7 @@ import inspect
 import importlib
 
 from buildpp import Library, LibType
+from ._library import _LIBRARY_CONSTRUCTOR_PROC_VAR
 
 
 def new_Library(name : str,
@@ -10,7 +11,8 @@ def new_Library(name : str,
 
     assert isinstance(name, str) and isinstance(libType, LibType), "TypeError"
 
-    return Library(name,
+    return Library(_LIBRARY_CONSTRUCTOR_PROC_VAR,
+                   name,
                    Path(inspect.stack()[1].filename).resolve().parent,
                    libType)
 

@@ -6,9 +6,11 @@ import inspect
 import copy
 
 from .__utils import findDuplicates, findNonExistFiles, deDuplicateList, GenericStringList
-from buildpp import Version, Langs
+from buildpp import Version
+from buildpp.langs import Langs
 
 
+_LIBRARY_CONSTRUCTOR_PROC_VAR = "8uyjhbyu7jhyu7fgchyu7htfjyuy7y"
 '''
 Note that all these classes refer to the Libraries personal dependencies/includes, not the includes inherited from
 its dependencies or the dependencies inherited from the dependencies
@@ -495,9 +497,12 @@ class Library:
     __dependenciesHandled : bool
 
     def __init__(self,
+                 proc_var : str,
                  name : str,
                  buildListDir : Path,
                  libType : LibType = LibType.STATIC):
+        
+        assert proc_var == _LIBRARY_CONSTRUCTOR_PROC_VAR, "Error, please use add_Library function, not Library constructor"
 
         self.__root = buildListDir
         self.__libType = libType
